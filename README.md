@@ -166,9 +166,17 @@ the app) and write the script with the same rules.
 ## Deployment
 
 Every push runs lint, typecheck, tests and build in GitHub Actions. Pushes to
-`main` also deploy `dist/` to GitHub Pages (the Vite `base` is derived from the
-repository name). GitHub Pages must be set to **Source: GitHub Actions** once in
-the repository settings; the workflow tries to enable it automatically.
+`main` also build `dist/` and publish it to the `gh-pages` branch, which GitHub
+Pages serves (the Vite `base` is derived from the repository name). If the site
+does not appear, open Settings → Pages and set **Source: Deploy from a branch**,
+branch `gh-pages`, folder `/ (root)`.
+
+## Trademarks
+
+This is an independent open-source project. It is not affiliated with,
+endorsed by, or supported by QlikTech International AB. Qlik, Qlik Sense and
+QlikView are trademarks of QlikTech International AB and are used here only to
+describe what the tool produces.
 
 ## License
 
