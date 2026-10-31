@@ -75,12 +75,12 @@ describe('links', () => {
     const auto = project({ sources: [a, b], links: [link('l', 'association', 'a', 'b', [['a1', 'b1'], ['a2', 'b2']], { compositeKey: { mode: 'autoNumber', name: '%YearRegion', separator: '|' } })] });
     const s1 = generateScript(concat);
     expect(s1).toContain("Year & '|' & Region AS [%YearRegion]");
-    expect(s1).toMatch(/Actuals:\nLOAD\n    Year,\n    Region,\n    Actual\n/);
+    expect(s1).toMatch(/Actuals:\nLOAD\n {4}Year,\n {4}Region,\n {4}Actual\n/);
     expect(s1).toContain("LEFT JOIN (Budget)\nLOAD\n    Year & '|' & Region AS [%YearRegion],\n    Actual\nRESIDENT Actuals;");
     const s2 = generateScript(auto);
     expect(s2).toContain("AutoNumber(Year & '|' & Region, '%YearRegion') AS [%YearRegion]");
     // Right side of an association drops the original key fields.
-    expect(s2).toMatch(/Actuals:\nLOAD\n    Actual,\n    AutoNumber/);
+    expect(s2).toMatch(/Actuals:\nLOAD\n {4}Actual,\n {4}AutoNumber/);
     expect(s1).toMatchSnapshot();
     expect(s2).toMatchSnapshot();
   });
