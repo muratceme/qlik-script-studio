@@ -15,7 +15,11 @@ function TableNodeComponent({ data, selected }: NodeProps<TableNodeType>) {
       style={{ width: NODE_WIDTH }}
       className={cn(
         'rounded-lg border bg-surface text-fg shadow-sm',
-        data.problem ? 'border-danger ring-2 ring-danger/30' : selected ? 'border-accent ring-2 ring-accent/30' : 'border-border-strong',
+        data.problem
+          ? 'border-danger ring-2 ring-danger/30'
+          : selected
+            ? 'border-accent ring-2 ring-accent/30'
+            : 'border-border-strong',
       )}
     >
       <header
@@ -24,11 +28,17 @@ function TableNodeComponent({ data, selected }: NodeProps<TableNodeType>) {
           data.kind === 'target' ? 'bg-accent-soft/60' : 'bg-surface-raised',
         )}
       >
-        {data.kind === 'source' && data.sourceKind ? <SourceKindIcon kind={data.sourceKind as SourceKind} className="size-4 text-fg-muted" /> : <Table2 className="size-4 text-accent" />}
+        {data.kind === 'source' && data.sourceKind ? (
+          <SourceKindIcon kind={data.sourceKind as SourceKind} className="size-4 text-fg-muted" />
+        ) : (
+          <Table2 className="size-4 text-accent" />
+        )}
         <span className="min-w-0 flex-1 truncate" title={data.name}>
           {data.name}
         </span>
-        {data.problem ? <AlertTriangle className="size-4 text-danger" aria-label={t('relations.legendProblem')} /> : null}
+        {data.problem ? (
+          <AlertTriangle className="size-4 text-danger" aria-label={t('relations.legendProblem')} />
+        ) : null}
       </header>
       <ul className="py-1">
         {data.fields.length === 0 ? <li className="px-2 py-1 text-xs text-fg-subtle">—</li> : null}
@@ -43,7 +53,13 @@ function TableNodeComponent({ data, selected }: NodeProps<TableNodeType>) {
             />
             <span className="min-w-0 flex-1 truncate">{field.name}</span>
             <RoleBadge role={field.role as FieldRole} label={t(`roles.${field.role}`)} />
-            <Handle type="source" position={Position.Right} id={handleId(data.tableId, field.id)} className="!size-2.5 !border-2" aria-label={`${data.name}.${field.name}`} />
+            <Handle
+              type="source"
+              position={Position.Right}
+              id={handleId(data.tableId, field.id)}
+              className="!size-2.5 !border-2"
+              aria-label={`${data.name}.${field.name}`}
+            />
           </li>
         ))}
       </ul>

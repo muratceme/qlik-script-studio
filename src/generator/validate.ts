@@ -33,14 +33,17 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
   const allNamed: { id: string; name: string }[] = [
     ...project.sources,
     ...project.targets,
-    ...project.links.filter((l) => l.type === 'applyMap' && l.applyMap).map((l) => ({ id: l.id, name: l.applyMap!.mapName })),
+    ...project.links
+      .filter((l) => l.type === 'applyMap' && l.applyMap)
+      .map((l) => ({ id: l.id, name: l.applyMap!.mapName })),
   ];
   if (project.calendar?.enabled) allNamed.push({ id: 'calendar', name: project.calendar.tableName });
   for (const t of allNamed) {
     checkName(out, t.name, 'table', { tableIds: [t.id] });
     const key = t.name.toLowerCase();
     const other = seenTables.get(key);
-    if (other !== undefined) out.push(error('DUPLICATE_TABLE_NAME', { name: t.name }, { tableIds: [other, t.id] }));
+    if (other !== undefined)
+      out.push(error('DUPLICATE_TABLE_NAME', { name: t.name }, { tableIds: [other, t.id] }));
     else seenTables.set(key, t.id);
   }
 
@@ -73,7 +76,13 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
       const outName = ctx.outName({ tableId: source.id, fieldId: field.id }).toLowerCase();
       const other = seenFields.get(outName);
       if (other !== undefined)
-        out.push(error('DUPLICATE_FIELD_NAME', { table: source.name, name: field.alias ?? field.name }, { tableIds: [source.id], fieldIds: [other, field.id] }));
+        out.push(
+          error(
+            'DUPLICATE_FIELD_NAME',
+            { table: source.name, name: field.alias ?? field.name },
+            { tableIds: [source.id], fieldIds: [other, field.id] },
+          ),
+        );
       else seenFields.set(outName, field.id);
     }
   }
@@ -91,10 +100,22 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
       const key = name.toLowerCase();
       const other = seenCols.get(key);
       if (other !== undefined)
-        out.push(error('DUPLICATE_FIELD_NAME', { table: target.name, name }, { tableIds: [target.id], fieldIds: [other, column.id] }));
+        out.push(
+          error(
+            'DUPLICATE_FIELD_NAME',
+            { table: target.name, name },
+            { tableIds: [target.id], fieldIds: [other, column.id] },
+          ),
+        );
       else seenCols.set(key, column.id);
       if (column.kind === 'calculated' && exprHasEmptyRaw(column.expr))
-        out.push(error('RAW_EXPRESSION_EMPTY', { table: target.name, column: name }, { tableIds: [target.id], fieldIds: [column.id] }));
+        out.push(
+          error(
+            'RAW_EXPRESSION_EMPTY',
+            { table: target.name, column: name },
+            { tableIds: [target.id], fieldIds: [column.id] },
+          ),
+        );
     }
 
     // Every referenced field must exist and be reachable from the primary table.
@@ -115,7 +136,13 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
       const exists = field !== undefined || (column !== undefined && column.tableId === ref.tableId);
       if (!exists) {
         reported.add(key);
-        out.push(error('FIELD_NOT_FOUND', { table: target.name }, { tableIds: [target.id], fieldIds: [ref.fieldId] }));
+        out.push(
+          error(
+            'FIELD_NOT_FOUND',
+            { table: target.name },
+            { tableIds: [target.id], fieldIds: [ref.fieldId] },
+          ),
+        );
         continue;
       }
       if (field && field.role === 'ignore') {
@@ -135,9 +162,24 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
         out.push(
           error(
             'FIELD_NOT_REACHABLE',
-            { table: target.name, field: ctx.outName(ref), source: ctx.tableName(ref.tableId), primary: ctx.tableName(primary) },
+            {
+              table: target.name,
+              field: ctx.outName(ref),
+              source: ctx.tableName(ref.tableId),
+              primary: ctx.tableName(primary),
+            },
             { tableIds: [target.id, ref.tableId], fieldIds: [ref.fieldId] },
-            pairs.length > 0 ? [{ kind: 'createLink', type: 'leftJoin', leftTableId: primary, rightTableId: ref.tableId, pairs }] : [],
+            pairs.length > 0
+              ? [
+                  {
+                    kind: 'createLink',
+                    type: 'leftJoin',
+                    leftTableId: primary,
+                    rightTableId: ref.tableId,
+                    pairs,
+                  },
+                ]
+              : [],
           ),
         );
       }
@@ -163,9 +205,11 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
     for (const pair of link.pairs) {
       const l = ctx.outName({ tableId: link.leftTableId, fieldId: pair.leftFieldId });
       const r = ctx.outName({ tableId: link.rightTableId, fieldId: pair.rightFieldId });
-      if (l === '?' || r === '?') out.push(error('FIELD_NOT_FOUND', { table: l === '?' ? left.name : right.name }, refs));
+      if (l === '?' || r === '?')
+        out.push(error('FIELD_NOT_FOUND', { table: l === '?' ? left.name : right.name }, refs));
     }
-    if (link.compositeKey && link.pairs.length >= 2) checkName(out, link.compositeKey.name, 'composite key', refs);
+    if (link.compositeKey && link.pairs.length >= 2)
+      checkName(out, link.compositeKey.name, 'composite key', refs);
     if (link.type === 'applyMap') {
       const opts = link.applyMap;
       const keyOk = opts && ctx.outName({ tableId: link.rightTableId, fieldId: opts.keyFieldId }) !== '?';
@@ -186,11 +230,21 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
 
   const sourceOrder = orderSources(ctx);
   if (!sourceOrder.ok) {
-    out.push(error('CYCLIC_DEPENDENCY', { tables: sourceOrder.cycle.map((s) => s.name).join(', ') }, { tableIds: sourceOrder.cycle.map((s) => s.id) }));
+    out.push(
+      error(
+        'CYCLIC_DEPENDENCY',
+        { tables: sourceOrder.cycle.map((s) => s.name).join(', ') },
+        { tableIds: sourceOrder.cycle.map((s) => s.id) },
+      ),
+    );
   }
   const transformOrder = orderTransform(ctx);
   if (!transformOrder.ok) {
-    const names = transformOrder.cycle.map((n) => (n.kind === 'target' ? n.target.name : `${ctx.tableName(n.link.rightTableId)} -> ${ctx.tableName(n.link.leftTableId)}`));
+    const names = transformOrder.cycle.map((n) =>
+      n.kind === 'target'
+        ? n.target.name
+        : `${ctx.tableName(n.link.rightTableId)} -> ${ctx.tableName(n.link.leftTableId)}`,
+    );
     out.push(
       error(
         'CYCLIC_DEPENDENCY',
@@ -218,7 +272,8 @@ export function commonKeyPairs(ctx: Context, leftTableId: string, rightTableId: 
     for (const rf of right.fields) {
       if (rf.role === 'ignore') continue;
       const rn = ctx.outName({ tableId: rightTableId, fieldId: rf.id });
-      if (ln === rn && (lf.role === 'key' || rf.role === 'key')) pairs.push({ leftFieldId: lf.id, rightFieldId: rf.id });
+      if (ln === rn && (lf.role === 'key' || rf.role === 'key'))
+        pairs.push({ leftFieldId: lf.id, rightFieldId: rf.id });
     }
   }
   return pairs;

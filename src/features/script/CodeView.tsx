@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection } from '@codemirror/view';
+import {
+  EditorView,
+  lineNumbers,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  drawSelection,
+} from '@codemirror/view';
 import { qlikExtensions } from './qlikLanguage';
 
 /** Read-only CodeMirror view that re-renders when `value` changes. */

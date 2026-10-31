@@ -16,8 +16,10 @@ export function DiagnosticList({ items, compact = false }: { items: Diagnostic[]
   const translateParams = (d: Diagnostic): Record<string, string> => {
     const params = { ...d.params };
     if (params.what) params.what = t(`whatNames.${params.what}`, { defaultValue: params.what });
-    if (params.leftType) params.leftType = t(`dataTypes.${params.leftType}`, { defaultValue: params.leftType });
-    if (params.rightType) params.rightType = t(`dataTypes.${params.rightType}`, { defaultValue: params.rightType });
+    if (params.leftType)
+      params.leftType = t(`dataTypes.${params.leftType}`, { defaultValue: params.leftType });
+    if (params.rightType)
+      params.rightType = t(`dataTypes.${params.rightType}`, { defaultValue: params.rightType });
     return params;
   };
 
@@ -35,7 +37,9 @@ export function DiagnosticList({ items, compact = false }: { items: Diagnostic[]
           key={`${d.code}-${i}`}
           className={cn(
             'rounded-md border px-3 py-2 text-sm',
-            d.severity === 'error' ? 'border-danger/40 bg-danger-soft/40' : 'border-warning/40 bg-warning-soft/40',
+            d.severity === 'error'
+              ? 'border-danger/40 bg-danger-soft/40'
+              : 'border-warning/40 bg-warning-soft/40',
           )}
         >
           <div className="flex items-start gap-2">
@@ -49,7 +53,12 @@ export function DiagnosticList({ items, compact = false }: { items: Diagnostic[]
               {d.fixes.length > 0 ? (
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {d.fixes.map((fix, j) => (
-                    <Button key={j} size="sm" icon={<Wrench />} onClick={() => update((p) => applyFix(p, fix))}>
+                    <Button
+                      key={j}
+                      size="sm"
+                      icon={<Wrench />}
+                      onClick={() => update((p) => applyFix(p, fix))}
+                    >
                       {fixLabel(fix)}
                     </Button>
                   ))}

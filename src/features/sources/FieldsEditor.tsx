@@ -41,7 +41,9 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
       </div>
 
       {table.fields.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border-strong p-4 text-center text-sm text-fg-muted">{t('sources.noFields')}</p>
+        <p className="rounded-md border border-dashed border-border-strong p-4 text-center text-sm text-fg-muted">
+          {t('sources.noFields')}
+        </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
@@ -80,7 +82,9 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
                       className="!h-8"
                       value={field.alias ?? ''}
                       placeholder={t('common.optional')}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.alias = e.target.value || null))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.alias = e.target.value || null))
+                      }
                     />
                   </td>
                   <td className="py-1 pr-2">
@@ -88,7 +92,9 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
                       aria-label={t('rolesStep.setRole')}
                       className="!h-8 !text-xs"
                       value={field.role}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.role = e.target.value as FieldRole))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.role = e.target.value as FieldRole))
+                      }
                       options={FIELD_ROLES.map((r) => ({ value: r, label: t(`roles.${r}`) }))}
                     />
                   </td>
@@ -97,13 +103,20 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
                       aria-label={t('common.type')}
                       className="!h-8 !text-xs"
                       value={field.dataType}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.dataType = e.target.value as DataType))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.dataType = e.target.value as DataType))
+                      }
                       options={DATA_TYPES.map((d) => ({ value: d, label: t(`dataTypes.${d}`) }))}
                     />
                   </td>
                   <td className="py-1">
                     <div className="flex justify-end gap-0.5">
-                      <IconButton label={t('common.moveUp')} size="sm" disabled={index === 0} onClick={() => moveField(table.id, index, index - 1)}>
+                      <IconButton
+                        label={t('common.moveUp')}
+                        size="sm"
+                        disabled={index === 0}
+                        onClick={() => moveField(table.id, index, index - 1)}
+                      >
                         <ArrowUp className="size-3.5" />
                       </IconButton>
                       <IconButton
@@ -114,7 +127,12 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
                       >
                         <ArrowDown className="size-3.5" />
                       </IconButton>
-                      <IconButton label={t('common.remove')} size="sm" variant="danger" onClick={() => removeField(table.id, field.id)}>
+                      <IconButton
+                        label={t('common.remove')}
+                        size="sm"
+                        variant="danger"
+                        onClick={() => removeField(table.id, field.id)}
+                      >
                         <Trash2 className="size-3.5" />
                       </IconButton>
                     </div>

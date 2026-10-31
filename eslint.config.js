@@ -19,7 +19,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true, allowExportNames: ['toast', 'useToasts'] }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true, allowExportNames: ['toast', 'useToasts'] },
+      ],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/consistent-type-imports': 'error',
     },
@@ -32,9 +35,18 @@ export default tseslint.config(
         'error',
         {
           patterns: [
-            { group: ['react', 'react-dom', 'react/*'], message: 'The generator and model must not depend on React.' },
-            { group: ['@/store/*', '@/features/*', '@/app/*', '@/components/*', '@/i18n/*'], message: 'The generator and model must not depend on UI code.' },
-            { group: ['zustand', 'zustand/*', 'i18next', 'react-i18next'], message: 'The generator and model must not depend on UI libraries.' },
+            {
+              group: ['react', 'react-dom', 'react/*'],
+              message: 'The generator and model must not depend on React.',
+            },
+            {
+              group: ['@/store/*', '@/features/*', '@/app/*', '@/components/*', '@/i18n/*'],
+              message: 'The generator and model must not depend on UI code.',
+            },
+            {
+              group: ['zustand', 'zustand/*', 'i18next', 'react-i18next'],
+              message: 'The generator and model must not depend on UI libraries.',
+            },
           ],
         },
       ],

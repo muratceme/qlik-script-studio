@@ -67,7 +67,11 @@ export function OperandPicker({
             onChange={(e) => {
               const raw = e.target.value;
               const num = Number(raw);
-              onChange({ kind: 'literal', value: raw.trim() !== '' && !Number.isNaN(num) && /^-?\d+(\.\d+)?$/.test(raw.trim()) ? num : raw });
+              onChange({
+                kind: 'literal',
+                value:
+                  raw.trim() !== '' && !Number.isNaN(num) && /^-?\d+(\.\d+)?$/.test(raw.trim()) ? num : raw,
+              });
             }}
           />
         ) : (

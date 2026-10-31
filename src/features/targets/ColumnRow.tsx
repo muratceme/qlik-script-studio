@@ -20,8 +20,10 @@ export function ColumnRow({
   onEdit: (columnId: string) => void;
 }) {
   const { t } = useTranslation();
-  const source = column.kind !== 'calculated' ? project.sources.find((s) => s.id === column.ref.tableId) : undefined;
-  const field = column.kind !== 'calculated' ? source?.fields.find((f) => f.id === column.ref.fieldId) : undefined;
+  const source =
+    column.kind !== 'calculated' ? project.sources.find((s) => s.id === column.ref.tableId) : undefined;
+  const field =
+    column.kind !== 'calculated' ? source?.fields.find((f) => f.id === column.ref.fieldId) : undefined;
   const foreign = source && source.id !== target.primarySourceId;
   const baseName = field ? (field.alias ?? field.name) : '';
 
@@ -30,13 +32,24 @@ export function ColumnRow({
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
           {column.kind === 'calculated' ? (
-            <span className="truncate font-mono text-xs text-fg-muted" title={previewExpr(project, target, column.expr)}>
+            <span
+              className="truncate font-mono text-xs text-fg-muted"
+              title={previewExpr(project, target, column.expr)}
+            >
               ƒ {previewExpr(project, target, column.expr)}
             </span>
           ) : (
             <>
-              <span className="truncate text-sm">{foreign ? `${source?.name}.` : ''}{baseName}</span>
-              {field ? <RoleBadge role={column.kind === 'measure' ? 'measure' : field.role} label={t(`roles.${column.kind === 'measure' ? 'measure' : field.role}`)} /> : null}
+              <span className="truncate text-sm">
+                {foreign ? `${source?.name}.` : ''}
+                {baseName}
+              </span>
+              {field ? (
+                <RoleBadge
+                  role={column.kind === 'measure' ? 'measure' : field.role}
+                  label={t(`roles.${column.kind === 'measure' ? 'measure' : field.role}`)}
+                />
+              ) : null}
             </>
           )}
         </div>
@@ -47,8 +60,13 @@ export function ColumnRow({
             aria-label={t('design.aggregation')}
             className="!h-8 !text-xs"
             value={column.kind === 'measure' ? column.aggregation : ''}
-            onChange={(e) => setColumnAggregation(target.id, column.id, (e.target.value || null) as Aggregation | null)}
-            options={[{ value: '', label: t('design.noAggregation') }, ...AGGREGATIONS.map((a) => ({ value: a, label: t(`aggregations.${a}`) }))]}
+            onChange={(e) =>
+              setColumnAggregation(target.id, column.id, (e.target.value || null) as Aggregation | null)
+            }
+            options={[
+              { value: '', label: t('design.noAggregation') },
+              ...AGGREGATIONS.map((a) => ({ value: a, label: t(`aggregations.${a}`) })),
+            ]}
           />
         ) : (
           <span className="text-xs text-fg-subtle">{t('design.calculated')}</span>
@@ -74,13 +92,28 @@ export function ColumnRow({
             <Pencil className="size-3.5" />
           </IconButton>
         ) : null}
-        <IconButton label={t('common.moveUp')} size="sm" disabled={index === 0} onClick={() => moveColumn(target.id, index, index - 1)}>
+        <IconButton
+          label={t('common.moveUp')}
+          size="sm"
+          disabled={index === 0}
+          onClick={() => moveColumn(target.id, index, index - 1)}
+        >
           <ArrowUp className="size-3.5" />
         </IconButton>
-        <IconButton label={t('common.moveDown')} size="sm" disabled={index === target.columns.length - 1} onClick={() => moveColumn(target.id, index, index + 1)}>
+        <IconButton
+          label={t('common.moveDown')}
+          size="sm"
+          disabled={index === target.columns.length - 1}
+          onClick={() => moveColumn(target.id, index, index + 1)}
+        >
           <ArrowDown className="size-3.5" />
         </IconButton>
-        <IconButton label={t('design.removeColumn')} size="sm" variant="danger" onClick={() => removeColumn(target.id, column.id)}>
+        <IconButton
+          label={t('design.removeColumn')}
+          size="sm"
+          variant="danger"
+          onClick={() => removeColumn(target.id, column.id)}
+        >
           <Trash2 className="size-3.5" />
         </IconButton>
       </div>

@@ -60,11 +60,23 @@ export function ConnectionPicker({
             submit();
           }}
         >
-          <Labeled label={t('sources.connectionName')} hint={kind === 'folder' ? t('sources.connectionHint') : undefined}>
-            {(id) => <TextInput id={id} autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder={kind === 'folder' ? 'lib://DataFiles' : 'MyDatabase'} />}
+          <Labeled
+            label={t('sources.connectionName')}
+            hint={kind === 'folder' ? t('sources.connectionHint') : undefined}
+          >
+            {(id) => (
+              <TextInput
+                id={id}
+                autoFocus
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={kind === 'folder' ? 'lib://DataFiles' : 'MyDatabase'}
+              />
+            )}
           </Labeled>
           <p className="text-xs text-fg-subtle">
-            {t('sources.connectionKind')}: {kind === 'folder' ? t('sources.connectionFolder') : t('sources.connectionDatabase')}
+            {t('sources.connectionKind')}:{' '}
+            {kind === 'folder' ? t('sources.connectionFolder') : t('sources.connectionDatabase')}
           </p>
         </form>
       </Dialog>

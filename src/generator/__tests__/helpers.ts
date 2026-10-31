@@ -21,7 +21,13 @@ export function project(partial: Partial<Project> = {}): Project {
     schemaVersion: SCHEMA_VERSION,
     id: 'p1',
     name: 'Test',
-    settings: { locale: 'en', dialect: 'sense', useTabs: true, qvdStorePath: 'lib://QVD/', dropConsumedSources: true },
+    settings: {
+      locale: 'en',
+      dialect: 'sense',
+      useTabs: true,
+      qvdStorePath: 'lib://QVD/',
+      dropConsumedSources: true,
+    },
     connections: [{ id: 'c1', name: 'lib://DataFiles', kind: 'folder' }],
     sources: [],
     targets: [],
@@ -33,16 +39,39 @@ export function project(partial: Partial<Project> = {}): Project {
 }
 
 export function field(id: string, name: string, partial: Partial<Field> = {}): Field {
-  return { id, name, alias: null, role: 'dimension', dataType: 'text', dateFormat: null, isUnique: false, suggestedRole: null, ...partial };
+  return {
+    id,
+    name,
+    alias: null,
+    role: 'dimension',
+    dataType: 'text',
+    dateFormat: null,
+    isUnique: false,
+    suggestedRole: null,
+    ...partial,
+  };
 }
 
-export function source(id: string, name: string, kind: SourceKind, fields: Field[], partial: Partial<SourceTable> = {}): SourceTable {
+export function source(
+  id: string,
+  name: string,
+  kind: SourceKind,
+  fields: Field[],
+  partial: Partial<SourceTable> = {},
+): SourceTable {
   const base: SourceTable = {
     id,
     name,
     kind,
     connectionId: kind === 'sql' ? null : 'c1',
-    path: kind === 'qvd' ? `${name}.qvd` : kind === 'excel' ? `${name}.xlsx` : kind === 'csv' ? `${name}.csv` : '',
+    path:
+      kind === 'qvd'
+        ? `${name}.qvd`
+        : kind === 'excel'
+          ? `${name}.xlsx`
+          : kind === 'csv'
+            ? `${name}.csv`
+            : '',
     excel: kind === 'excel' ? { sheet: 'Sheet1', headerRow: 1 } : null,
     csv: kind === 'csv' ? { delimiter: ',', encoding: 'utf8', hasHeader: true, msq: true } : null,
     sql: kind === 'sql' ? { query: `SELECT * FROM ${name}` } : null,
@@ -55,7 +84,13 @@ export function source(id: string, name: string, kind: SourceKind, fields: Field
   return { ...base, ...partial };
 }
 
-export function target(id: string, name: string, primarySourceId: string, columns: TargetColumn[], partial: Partial<TargetTable> = {}): TargetTable {
+export function target(
+  id: string,
+  name: string,
+  primarySourceId: string,
+  columns: TargetColumn[],
+  partial: Partial<TargetTable> = {},
+): TargetTable {
   return {
     id,
     name,
@@ -78,7 +113,14 @@ export function col(id: string, tableId: string, fieldId: string, alias: string 
   return { id, kind: 'field', ref: ref(tableId, fieldId), alias };
 }
 
-export function link(id: string, type: LinkType, leftTableId: string, rightTableId: string, pairs: [string, string][], partial: Partial<Link> = {}): Link {
+export function link(
+  id: string,
+  type: LinkType,
+  leftTableId: string,
+  rightTableId: string,
+  pairs: [string, string][],
+  partial: Partial<Link> = {},
+): Link {
   return {
     id,
     type,

@@ -22,7 +22,15 @@ const SIZE: Record<Size, string> = {
   md: 'h-9 px-3.5 text-sm gap-2',
 };
 
-export function Button({ variant = 'secondary', size = 'md', icon, className, children, type = 'button', ...rest }: ButtonProps) {
+export function Button({
+  variant = 'secondary',
+  size = 'md',
+  icon,
+  className,
+  children,
+  type = 'button',
+  ...rest
+}: ButtonProps) {
   return (
     <button
       type={type}
@@ -46,7 +54,15 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   variant?: Variant;
 }
 
-export function IconButton({ label, size = 'md', variant = 'ghost', className, children, type = 'button', ...rest }: IconButtonProps) {
+export function IconButton({
+  label,
+  size = 'md',
+  variant = 'ghost',
+  className,
+  children,
+  type = 'button',
+  ...rest
+}: IconButtonProps) {
   return (
     <button
       type={type}

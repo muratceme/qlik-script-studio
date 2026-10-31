@@ -11,7 +11,12 @@ export function addLink(link: Link): void {
   });
 }
 
-export function createLink(type: LinkType, leftTableId: string, rightTableId: string, pairs: Link['pairs']): Link {
+export function createLink(
+  type: LinkType,
+  leftTableId: string,
+  rightTableId: string,
+  pairs: Link['pairs'],
+): Link {
   const link = newLink(type, leftTableId, rightTableId);
   link.pairs = pairs;
   return link;
@@ -36,7 +41,9 @@ export function removeLink(id: string): void {
   update((p) => {
     p.links = p.links.filter((l) => l.id !== id);
     for (const t of p.targets) {
-      t.columns = t.columns.filter((c) => !(c.kind === 'calculated' && c.expr.kind === 'applyMap' && c.expr.linkId === id));
+      t.columns = t.columns.filter(
+        (c) => !(c.kind === 'calculated' && c.expr.kind === 'applyMap' && c.expr.linkId === id),
+      );
     }
   });
 }

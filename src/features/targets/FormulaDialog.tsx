@@ -25,13 +25,28 @@ function defaultExpr(kind: Kind, fields: ReachableField[], applyMapLinkId: strin
     case 'concat':
       return { kind, parts: [firstField(fields), firstField(fields.slice(1))], separator: ' ' };
     case 'arith':
-      return { kind, op: '*', left: firstField(fields), right: { kind: 'literal', value: 1 }, safeDivide: true };
+      return {
+        kind,
+        op: '*',
+        left: firstField(fields),
+        right: { kind: 'literal', value: 1 },
+        safeDivide: true,
+      };
     case 'percent':
       return { kind, part: firstField(fields), whole: firstField(fields.slice(1)) };
     case 'if':
-      return { kind, condition: newConditionGroup('and'), then: { kind: 'literal', value: 'Yes' }, else: { kind: 'literal', value: 'No' } };
+      return {
+        kind,
+        condition: newConditionGroup('and'),
+        then: { kind: 'literal', value: 'Yes' },
+        else: { kind: 'literal', value: 'No' },
+      };
     case 'datePart':
-      return { kind, part: 'year', of: firstField(fields, (f) => f.field.role === 'date' || f.field.dataType === 'date') };
+      return {
+        kind,
+        part: 'year',
+        of: firstField(fields, (f) => f.field.role === 'date' || f.field.dataType === 'date'),
+      };
     case 'applyMap':
       return { kind, linkId: applyMapLinkId ?? '', key: firstField(fields) };
     case 'autoNumber':
@@ -54,7 +69,9 @@ export function FormulaDialog({ open, onClose, target, editColumnId = null }: Fo
   const project = useProjectStore((s) => s.project);
   const fields = useReachableFields(target);
   const mapLinks = project.links.filter((l) => l.type === 'applyMap' && l.applyMap);
-  const editing = editColumnId ? target.columns.find((c) => c.id === editColumnId && c.kind === 'calculated') : undefined;
+  const editing = editColumnId
+    ? target.columns.find((c) => c.id === editColumnId && c.kind === 'calculated')
+    : undefined;
 
   const [kind, setKind] = useState<Kind>('concat');
   const [expr, setExpr] = useState<Expr>(() => defaultExpr('concat', fields, null));
@@ -63,7 +80,9 @@ export function FormulaDialog({ open, onClose, target, editColumnId = null }: Fo
   useEffect(() => {
     if (!open) return;
     if (editing && editing.kind === 'calculated') {
-      const k = (editing.expr.kind === 'field' || editing.expr.kind === 'literal' ? 'raw' : editing.expr.kind) as Kind;
+      const k = (
+        editing.expr.kind === 'field' || editing.expr.kind === 'literal' ? 'raw' : editing.expr.kind
+      ) as Kind;
       setKind(k);
       setExpr(editing.expr);
       setName(editing.alias);
@@ -83,7 +102,8 @@ export function FormulaDialog({ open, onClose, target, editColumnId = null }: Fo
 
   const submit = () => {
     if (!name.trim()) return;
-    if (editing) replaceColumn(target.id, editing.id, { id: editing.id, kind: 'calculated', alias: name.trim(), expr });
+    if (editing)
+      replaceColumn(target.id, editing.id, { id: editing.id, kind: 'calculated', alias: name.trim(), expr });
     else addCalculatedColumn(target.id, name.trim(), expr);
     onClose();
   };
@@ -97,7 +117,11 @@ export function FormulaDialog({ open, onClose, target, editColumnId = null }: Fo
       footer={
         <>
           <Button onClick={onClose}>{t('common.cancel')}</Button>
-          <Button variant="primary" onClick={submit} disabled={!name.trim() || (expr.kind === 'raw' && !expr.text.trim())}>
+          <Button
+            variant="primary"
+            onClick={submit}
+            disabled={!name.trim() || (expr.kind === 'raw' && !expr.text.trim())}
+          >
             {editing ? t('common.save') : t('common.add')}
           </Button>
         </>
@@ -106,14 +130,33 @@ export function FormulaDialog({ open, onClose, target, editColumnId = null }: Fo
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Labeled label={t('formula.operation')}>
-            {(id) => <Select id={id} value={kind} onChange={(e) => changeKind(e.target.value as Kind)} options={KINDS.map((k) => ({ value: k, label: t(`exprKinds.${k}`) }))} />}
+            {(id) => (
+              <Select
+                id={id}
+                value={kind}
+                onChange={(e) => changeKind(e.target.value as Kind)}
+                options={KINDS.map((k) => ({ value: k, label: t(`exprKinds.${k}`) }))}
+              />
+            )}
           </Labeled>
           <Labeled label={t('formula.outputName')}>
-            {(id) => <TextInput id={id} value={name} onChange={(e) => setName(e.target.value)} placeholder="NewField" />}
+            {(id) => (
+              <TextInput
+                id={id}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="NewField"
+              />
+            )}
           </Labeled>
         </div>
 
-        <ExprEditor expr={expr} onChange={setExpr} fields={fields} mapLinks={mapLinks.map((l) => ({ id: l.id, name: l.applyMap!.mapName }))} />
+        <ExprEditor
+          expr={expr}
+          onChange={setExpr}
+          fields={fields}
+          mapLinks={mapLinks.map((l) => ({ id: l.id, name: l.applyMap!.mapName }))}
+        />
 
         <div>
           <p className="mb-1 text-xs font-medium text-fg-muted">{t('formula.result')}</p>
@@ -146,19 +189,41 @@ function ExprEditor({
           {expr.parts.map((part, i) => (
             <div key={i} className="flex items-end gap-1.5">
               <div className="flex-1">
-                <OperandPicker label={`${i + 1}`} value={part} onChange={(p) => onChange({ ...expr, parts: expr.parts.map((x, j) => (j === i ? p : x)) })} fields={fields} />
+                <OperandPicker
+                  label={`${i + 1}`}
+                  value={part}
+                  onChange={(p) => onChange({ ...expr, parts: expr.parts.map((x, j) => (j === i ? p : x)) })}
+                  fields={fields}
+                />
               </div>
-              <IconButton label={t('common.remove')} size="sm" variant="danger" disabled={expr.parts.length <= 1} onClick={() => onChange({ ...expr, parts: expr.parts.filter((_, j) => j !== i) })}>
+              <IconButton
+                label={t('common.remove')}
+                size="sm"
+                variant="danger"
+                disabled={expr.parts.length <= 1}
+                onClick={() => onChange({ ...expr, parts: expr.parts.filter((_, j) => j !== i) })}
+              >
                 <Trash2 className="size-3.5" />
               </IconButton>
             </div>
           ))}
           <div className="flex items-end gap-3">
-            <Button size="sm" icon={<Plus />} onClick={() => onChange({ ...expr, parts: [...expr.parts, { kind: 'literal', value: '' }] })}>
+            <Button
+              size="sm"
+              icon={<Plus />}
+              onClick={() => onChange({ ...expr, parts: [...expr.parts, { kind: 'literal', value: '' }] })}
+            >
               {t('formula.add')}
             </Button>
             <Labeled label={t('formula.separator')} className="w-32">
-              {(id) => <TextInput id={id} className="!h-8" value={expr.separator} onChange={(e) => onChange({ ...expr, separator: e.target.value })} />}
+              {(id) => (
+                <TextInput
+                  id={id}
+                  className="!h-8"
+                  value={expr.separator}
+                  onChange={(e) => onChange({ ...expr, separator: e.target.value })}
+                />
+              )}
             </Labeled>
           </div>
         </div>
@@ -166,7 +231,12 @@ function ExprEditor({
     case 'arith':
       return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr]">
-          <OperandPicker label={t('formula.left')} value={expr.left} onChange={(left) => onChange({ ...expr, left })} fields={fields} />
+          <OperandPicker
+            label={t('formula.left')}
+            value={expr.left}
+            onChange={(left) => onChange({ ...expr, left })}
+            fields={fields}
+          />
           <Labeled label={t('formula.operator')}>
             {(id) => (
               <Select
@@ -183,17 +253,37 @@ function ExprEditor({
               />
             )}
           </Labeled>
-          <OperandPicker label={t('formula.right')} value={expr.right} onChange={(right) => onChange({ ...expr, right })} fields={fields} />
+          <OperandPicker
+            label={t('formula.right')}
+            value={expr.right}
+            onChange={(right) => onChange({ ...expr, right })}
+            fields={fields}
+          />
           {expr.op === '/' ? (
-            <Checkbox className="sm:col-span-3" label={t('formula.safeDivide')} checked={expr.safeDivide} onChange={(e) => onChange({ ...expr, safeDivide: e.target.checked })} />
+            <Checkbox
+              className="sm:col-span-3"
+              label={t('formula.safeDivide')}
+              checked={expr.safeDivide}
+              onChange={(e) => onChange({ ...expr, safeDivide: e.target.checked })}
+            />
           ) : null}
         </div>
       );
     case 'percent':
       return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <OperandPicker label={t('formula.part')} value={expr.part} onChange={(part) => onChange({ ...expr, part })} fields={fields} />
-          <OperandPicker label={t('formula.whole')} value={expr.whole} onChange={(whole) => onChange({ ...expr, whole })} fields={fields} />
+          <OperandPicker
+            label={t('formula.part')}
+            value={expr.part}
+            onChange={(part) => onChange({ ...expr, part })}
+            fields={fields}
+          />
+          <OperandPicker
+            label={t('formula.whole')}
+            value={expr.whole}
+            onChange={(whole) => onChange({ ...expr, whole })}
+            fields={fields}
+          />
         </div>
       );
     case 'if':
@@ -201,11 +291,25 @@ function ExprEditor({
         <div className="flex flex-col gap-3">
           <div>
             <p className="mb-1 text-xs font-medium text-fg-muted">{t('formula.condition')}</p>
-            <FilterBuilder group={expr.condition} onChange={(condition) => onChange({ ...expr, condition })} fields={fields} />
+            <FilterBuilder
+              group={expr.condition}
+              onChange={(condition) => onChange({ ...expr, condition })}
+              fields={fields}
+            />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <OperandPicker label={t('formula.then')} value={expr.then} onChange={(then) => onChange({ ...expr, then })} fields={fields} />
-            <OperandPicker label={t('formula.else')} value={expr.else ?? { kind: 'literal', value: '' }} onChange={(els) => onChange({ ...expr, else: els })} fields={fields} />
+            <OperandPicker
+              label={t('formula.then')}
+              value={expr.then}
+              onChange={(then) => onChange({ ...expr, then })}
+              fields={fields}
+            />
+            <OperandPicker
+              label={t('formula.else')}
+              value={expr.else ?? { kind: 'literal', value: '' }}
+              onChange={(els) => onChange({ ...expr, else: els })}
+              fields={fields}
+            />
           </div>
         </div>
       );
@@ -213,9 +317,22 @@ function ExprEditor({
       return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Labeled label={t('formula.datePart')}>
-            {(id) => <Select id={id} className="!h-8 !text-xs" value={expr.part} onChange={(e) => onChange({ ...expr, part: e.target.value as DatePart })} options={DATE_PARTS.map((p) => ({ value: p, label: t(`dateParts.${p}`) }))} />}
+            {(id) => (
+              <Select
+                id={id}
+                className="!h-8 !text-xs"
+                value={expr.part}
+                onChange={(e) => onChange({ ...expr, part: e.target.value as DatePart })}
+                options={DATE_PARTS.map((p) => ({ value: p, label: t(`dateParts.${p}`) }))}
+              />
+            )}
           </Labeled>
-          <OperandPicker label={t('formula.dateField')} value={expr.of} onChange={(of) => onChange({ ...expr, of })} fields={fields} />
+          <OperandPicker
+            label={t('formula.dateField')}
+            value={expr.of}
+            onChange={(of) => onChange({ ...expr, of })}
+            fields={fields}
+          />
         </div>
       );
     case 'applyMap':
@@ -224,24 +341,57 @@ function ExprEditor({
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Labeled label={t('formula.mapping')}>
-            {(id) => <Select id={id} className="!h-8 !text-xs" value={expr.linkId} onChange={(e) => onChange({ ...expr, linkId: e.target.value })} options={mapLinks.map((l) => ({ value: l.id, label: l.name }))} />}
+            {(id) => (
+              <Select
+                id={id}
+                className="!h-8 !text-xs"
+                value={expr.linkId}
+                onChange={(e) => onChange({ ...expr, linkId: e.target.value })}
+                options={mapLinks.map((l) => ({ value: l.id, label: l.name }))}
+              />
+            )}
           </Labeled>
-          <OperandPicker label={t('formula.keyField')} value={expr.key} onChange={(key) => onChange({ ...expr, key })} fields={fields} />
+          <OperandPicker
+            label={t('formula.keyField')}
+            value={expr.key}
+            onChange={(key) => onChange({ ...expr, key })}
+            fields={fields}
+          />
         </div>
       );
     case 'autoNumber':
       return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <OperandPicker label={t('common.field')} value={expr.of} onChange={(of) => onChange({ ...expr, of })} fields={fields} />
+          <OperandPicker
+            label={t('common.field')}
+            value={expr.of}
+            onChange={(of) => onChange({ ...expr, of })}
+            fields={fields}
+          />
           <Labeled label={`${t('formula.counter')} (${t('common.optional')})`}>
-            {(id) => <TextInput id={id} className="!h-8" value={expr.counterName ?? ''} onChange={(e) => onChange({ ...expr, counterName: e.target.value || null })} />}
+            {(id) => (
+              <TextInput
+                id={id}
+                className="!h-8"
+                value={expr.counterName ?? ''}
+                onChange={(e) => onChange({ ...expr, counterName: e.target.value || null })}
+              />
+            )}
           </Labeled>
         </div>
       );
     case 'raw':
       return (
         <Labeled label={t('formula.rawText')} hint={t('formula.rawHint')}>
-          {(id) => <TextArea id={id} rows={3} value={expr.text} onChange={(e) => onChange({ ...expr, text: e.target.value })} placeholder="Upper([Customer Name])" />}
+          {(id) => (
+            <TextArea
+              id={id}
+              rows={3}
+              value={expr.text}
+              onChange={(e) => onChange({ ...expr, text: e.target.value })}
+              placeholder="Upper([Customer Name])"
+            />
+          )}
         </Labeled>
       );
     default:

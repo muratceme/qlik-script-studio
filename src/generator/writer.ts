@@ -39,7 +39,9 @@ export class ScriptWriter {
     for (const section of this.sections) {
       if (section.lines.length === 0) continue;
       if (out.length > 0) out.push('');
-      out.push(useTabs ? `///$tab ${section.title}` : `// ${'='.repeat(10)} ${section.title} ${'='.repeat(10)}`);
+      out.push(
+        useTabs ? `///$tab ${section.title}` : `// ${'='.repeat(10)} ${section.title} ${'='.repeat(10)}`,
+      );
       // Trim trailing blank lines inside a section.
       let end = section.lines.length;
       while (end > 0 && section.lines[end - 1] === '') end--;

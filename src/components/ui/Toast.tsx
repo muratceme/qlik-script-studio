@@ -32,15 +32,28 @@ export function toast(message: string, tone: Toast['tone'] = 'success'): void {
 export function ToastViewport() {
   const { toasts, dismiss } = useToasts();
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2" role="status" aria-live="polite">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2"
+      role="status"
+      aria-live="polite"
+    >
       {toasts.map((t) => (
         <div
           key={t.id}
           className="pointer-events-auto flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm shadow-lg"
         >
-          {t.tone === 'success' ? <CheckCircle2 className="size-4 text-success" /> : <AlertTriangle className="size-4 text-danger" />}
+          {t.tone === 'success' ? (
+            <CheckCircle2 className="size-4 text-success" />
+          ) : (
+            <AlertTriangle className="size-4 text-danger" />
+          )}
           <span>{t.message}</span>
-          <button type="button" className="ml-1 text-fg-subtle hover:text-fg" onClick={() => dismiss(t.id)} aria-label="Dismiss">
+          <button
+            type="button"
+            className="ml-1 text-fg-subtle hover:text-fg"
+            onClick={() => dismiss(t.id)}
+            aria-label="Dismiss"
+          >
             <X className="size-3.5" />
           </button>
         </div>

@@ -166,7 +166,9 @@ export function finalFieldNames(ctx: Context, tableId: string): string[] {
     }
     if (link.leftTableId === tableId && (JOIN_TYPES.has(link.type) || link.type === 'concatenate')) {
       const rightNames = ownFieldNames(ctx, link.rightTableId);
-      const pairRight = new Set(link.pairs.map((p) => ctx.outName({ tableId: link.rightTableId, fieldId: p.rightFieldId })));
+      const pairRight = new Set(
+        link.pairs.map((p) => ctx.outName({ tableId: link.rightTableId, fieldId: p.rightFieldId })),
+      );
       for (const n of rightNames) {
         if (link.compositeKey && link.pairs.length >= 2 && pairRight.has(n)) continue;
         push(n);
@@ -186,7 +188,9 @@ export function ownFieldNames(ctx: Context, tableId: string): string[] {
   const table = ctx.table(tableId);
   if (!table) return [];
   if (isSourceTable(table)) {
-    return table.fields.filter((f) => f.role !== 'ignore').map((f) => ctx.outName({ tableId, fieldId: f.id }));
+    return table.fields
+      .filter((f) => f.role !== 'ignore')
+      .map((f) => ctx.outName({ tableId, fieldId: f.id }));
   }
   return table.columns.map((c) => ctx.columnName(c));
 }

@@ -27,7 +27,13 @@ export default defineConfig({
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],
-          codemirror: ['@codemirror/view', '@codemirror/state', '@codemirror/language', '@codemirror/commands', '@lezer/highlight'],
+          codemirror: [
+            '@codemirror/view',
+            '@codemirror/state',
+            '@codemirror/language',
+            '@codemirror/commands',
+            '@lezer/highlight',
+          ],
           flow: ['@xyflow/react'],
         },
       },

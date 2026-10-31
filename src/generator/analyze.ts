@@ -17,7 +17,8 @@ function fieldIdByOutName(ctx: Context, tableId: string, name: string): string |
   const table = ctx.table(tableId);
   if (!table) return undefined;
   if (isSourceTable(table)) {
-    return table.fields.find((f) => f.role !== 'ignore' && ctx.outName({ tableId, fieldId: f.id }) === name)?.id;
+    return table.fields.find((f) => f.role !== 'ignore' && ctx.outName({ tableId, fieldId: f.id }) === name)
+      ?.id;
   }
   return table.columns.find((c) => ctx.columnName(c) === name)?.id;
 }
@@ -57,7 +58,8 @@ export function analyzeWithContext(ctx: Context): Diagnostic[] {
       const setB = new Set(fieldSets.get(b));
       const common = fieldSets.get(a)!.filter((n) => setB.has(n));
       if (common.length < 2) continue;
-      const keyName = common.find((n) => roleOf(ctx, a, n) === 'key' || roleOf(ctx, b, n) === 'key') ?? common[0]!;
+      const keyName =
+        common.find((n) => roleOf(ctx, a, n) === 'key' || roleOf(ctx, b, n) === 'key') ?? common[0]!;
       const fixes: Fix[] = [];
       for (const name of common) {
         if (name === keyName) continue;
@@ -172,7 +174,14 @@ export function analyzeWithContext(ctx: Context): Diagnostic[] {
         out.push(
           warning(
             'KEY_TYPE_MISMATCH',
-            { left: left.name, leftField: lf.name, leftType: lf.dataType, right: right.name, rightField: rf.name, rightType: rf.dataType },
+            {
+              left: left.name,
+              leftField: lf.name,
+              leftType: lf.dataType,
+              right: right.name,
+              rightField: rf.name,
+              rightType: rf.dataType,
+            },
             { ...refs, fieldIds: [lf.id, rf.id] },
             [],
           ),
@@ -191,7 +200,12 @@ export function analyzeWithContext(ctx: Context): Diagnostic[] {
         out.push(
           warning(
             'JOIN_FANOUT_RISK',
-            { table: ctx.tableName(tableId), fields: keyFields.map((f) => f.name).join(', '), left: left.name, right: right.name },
+            {
+              table: ctx.tableName(tableId),
+              fields: keyFields.map((f) => f.name).join(', '),
+              left: left.name,
+              right: right.name,
+            },
             { ...refs, fieldIds: keyFields.map((f) => f.id) },
             keyFields.map((f) => ({ kind: 'setRole', tableId, fieldId: f.id, role: 'key' }) as Fix),
           ),
@@ -199,7 +213,9 @@ export function analyzeWithContext(ctx: Context): Diagnostic[] {
       }
 
       // Common fields besides the chosen keys silently become part of the join.
-      const pairLeft = new Set(link.pairs.map((p) => ctx.outName({ tableId: left.id, fieldId: p.leftFieldId })));
+      const pairLeft = new Set(
+        link.pairs.map((p) => ctx.outName({ tableId: left.id, fieldId: p.leftFieldId })),
+      );
       const rightNames = ownFieldNames(ctx, right.id).filter(
         (n) => !link.pairs.some((p) => ctx.outName({ tableId: right.id, fieldId: p.rightFieldId }) === n),
       );

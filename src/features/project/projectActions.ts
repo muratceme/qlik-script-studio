@@ -26,7 +26,11 @@ export function loadSampleProject(): void {
 
 export function exportProject(): void {
   const project = useProjectStore.getState().project;
-  downloadText(safeFileName(project.name, 'qlikstudio.json'), JSON.stringify(project, null, 2), 'application/json');
+  downloadText(
+    safeFileName(project.name, 'qlikstudio.json'),
+    JSON.stringify(project, null, 2),
+    'application/json',
+  );
 }
 
 export type ImportResult = { ok: true } | { ok: false; issues: string[] };

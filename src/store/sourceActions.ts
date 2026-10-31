@@ -19,7 +19,8 @@ export function addSourceTable(kind: SourceKind = 'qvd'): string {
   const project = useProjectStore.getState().project;
   const taken = [...project.sources, ...project.targets].map((t) => t.name);
   const table = newSourceTable(uniqueTableName('Table', taken), kind);
-  table.connectionId = project.connections.find((c) => c.kind === (kind === 'sql' ? 'database' : 'folder'))?.id ?? null;
+  table.connectionId =
+    project.connections.find((c) => c.kind === (kind === 'sql' ? 'database' : 'folder'))?.id ?? null;
   update((p) => {
     p.sources.push(table);
   });
@@ -31,7 +32,13 @@ export function duplicateSourceTable(id: string): void {
   const project = useProjectStore.getState().project;
   const source = project.sources.find((s) => s.id === id);
   if (!source) return;
-  const copy = newSourceTable(uniqueTableName(source.name, project.sources.map((s) => s.name)), source.kind);
+  const copy = newSourceTable(
+    uniqueTableName(
+      source.name,
+      project.sources.map((s) => s.name),
+    ),
+    source.kind,
+  );
   const cloned: SourceTable = {
     ...structuredClone(source),
     id: copy.id,
@@ -137,9 +144,12 @@ export function removeField(tableId: string, fieldId: string): void {
     if (index < 0) return;
     table.fields.splice(index, 1);
     if (table.sampleRows) table.sampleRows = table.sampleRows.map((r) => r.filter((_, i) => i !== index));
-    if (table.kind === 'inline' && table.inline) table.inline.rows = table.inline.rows.map((r) => r.filter((_, i) => i !== index));
-    for (const t of p.targets) t.columns = t.columns.filter((c) => c.kind === 'calculated' || c.ref.fieldId !== fieldId);
-    for (const l of p.links) l.pairs = l.pairs.filter((pair) => pair.leftFieldId !== fieldId && pair.rightFieldId !== fieldId);
+    if (table.kind === 'inline' && table.inline)
+      table.inline.rows = table.inline.rows.map((r) => r.filter((_, i) => i !== index));
+    for (const t of p.targets)
+      t.columns = t.columns.filter((c) => c.kind === 'calculated' || c.ref.fieldId !== fieldId);
+    for (const l of p.links)
+      l.pairs = l.pairs.filter((pair) => pair.leftFieldId !== fieldId && pair.rightFieldId !== fieldId);
     if (p.calendar?.dateField?.fieldId === fieldId) p.calendar.dateField = null;
   });
 }
@@ -147,7 +157,15 @@ export function removeField(tableId: string, fieldId: string): void {
 export function moveField(tableId: string, from: number, to: number): void {
   update((p) => {
     const table = p.sources.find((s) => s.id === tableId);
-    if (!table || from === to || from < 0 || to < 0 || from >= table.fields.length || to >= table.fields.length) return;
+    if (
+      !table ||
+      from === to ||
+      from < 0 ||
+      to < 0 ||
+      from >= table.fields.length ||
+      to >= table.fields.length
+    )
+      return;
     const move = <T>(arr: T[]) => {
       const [item] = arr.splice(from, 1);
       arr.splice(to, 0, item as T);

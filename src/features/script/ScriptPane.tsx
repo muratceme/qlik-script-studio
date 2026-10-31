@@ -31,7 +31,11 @@ export function ScriptPane() {
         <h2 id="script-pane-title" className="flex items-center gap-2 text-sm font-semibold">
           <FileCode2 className="size-4 text-accent" />
           {t('script.title')}
-          {script ? <span className="text-xs font-normal text-fg-subtle">{t('script.lines', { count: lineCount })}</span> : null}
+          {script ? (
+            <span className="text-xs font-normal text-fg-subtle">
+              {t('script.lines', { count: lineCount })}
+            </span>
+          ) : null}
         </h2>
         <div className="ml-auto flex items-center gap-1.5">
           <Button size="sm" icon={copied ? <Check /> : <Copy />} onClick={onCopy} disabled={!script}>
@@ -89,7 +93,9 @@ export function ScriptPane() {
           <div className="flex h-full flex-col">
             {result.warnings.length > 0 ? (
               <div className="border-b border-border p-3">
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-warning">{t('script.warningsTitle')}</h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-warning">
+                  {t('script.warningsTitle')}
+                </h3>
                 <DiagnosticList items={result.warnings} compact />
               </div>
             ) : null}

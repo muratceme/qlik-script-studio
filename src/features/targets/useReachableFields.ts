@@ -18,7 +18,8 @@ export function reachableFields(project: Project, target: TargetTable | null): R
   if (!target?.primarySourceId) return [];
   const ids = [target.primarySourceId];
   for (const l of project.links) {
-    if (l.leftTableId === target.primarySourceId && MERGE_TYPES.has(l.type) && !ids.includes(l.rightTableId)) ids.push(l.rightTableId);
+    if (l.leftTableId === target.primarySourceId && MERGE_TYPES.has(l.type) && !ids.includes(l.rightTableId))
+      ids.push(l.rightTableId);
   }
   const out: ReachableField[] = [];
   for (const id of ids) {
@@ -49,6 +50,7 @@ export function fieldLabel(project: Project, ref: FieldRef): string {
   if (table && field) return `${table.name}.${field.alias ?? field.name}`;
   const target = project.targets.find((t) => t.id === ref.tableId);
   const column = target?.columns.find((c) => c.id === ref.fieldId);
-  if (target && column) return `${target.name}.${column.kind === 'field' ? (column.alias ?? '?') : column.alias}`;
+  if (target && column)
+    return `${target.name}.${column.kind === 'field' ? (column.alias ?? '?') : column.alias}`;
   return '?';
 }

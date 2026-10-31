@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core';
 import { LayoutTemplate, Plus } from 'lucide-react';
 import type { FieldRef } from '@/model/types';
 import { Button, EmptyState } from '@/components/ui';
@@ -19,7 +28,10 @@ export function DesignStep() {
   const selectedId = useUiStore((s) => s.selectedTargetId);
   const select = useUiStore((s) => s.selectTarget);
   const [dragging, setDragging] = useState<FieldRef | null>(null);
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }), useSensor(KeyboardSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor),
+  );
 
   const selectedTarget = project.targets.find((x) => x.id === selectedId) ?? project.targets[0] ?? null;
 
@@ -45,13 +57,24 @@ export function DesignStep() {
   };
 
   return (
-    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={() => setDragging(null)}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragCancel={() => setDragging(null)}
+    >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <SourceFieldsPane sources={project.sources} onAdd={addToSelected} canAdd />
         <div className="flex min-w-0 flex-col gap-3">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">{t('design.targetsPane')}</h2>
-            <Button size="sm" variant="primary" icon={<Plus />} className="ml-auto" onClick={() => addTargetTable()}>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={<Plus />}
+              className="ml-auto"
+              onClick={() => addTargetTable()}
+            >
               {t('design.addTarget')}
             </Button>
           </div>
@@ -68,14 +91,24 @@ export function DesignStep() {
             />
           ) : (
             project.targets.map((target) => (
-              <TargetCard key={target.id} project={project} target={target} selected={selectedTarget?.id === target.id} onSelect={() => select(selectedTarget?.id === target.id ? null : target.id)} />
+              <TargetCard
+                key={target.id}
+                project={project}
+                target={target}
+                selected={selectedTarget?.id === target.id}
+                onSelect={() => select(selectedTarget?.id === target.id ? null : target.id)}
+              />
             ))
           )}
           <CalendarCard />
         </div>
       </div>
       <DragOverlay dropAnimation={null}>
-        {dragging ? <div className="rounded-md border border-accent bg-surface px-2 py-1 text-sm shadow-lg">{fieldLabel(project, dragging)}</div> : null}
+        {dragging ? (
+          <div className="rounded-md border border-accent bg-surface px-2 py-1 text-sm shadow-lg">
+            {fieldLabel(project, dragging)}
+          </div>
+        ) : null}
       </DragOverlay>
     </DndContext>
   );

@@ -2,7 +2,15 @@ import type { ReactNode } from 'react';
 import type { FieldRole } from '@/model/types';
 import { cn } from '@/lib/cn';
 
-export function Badge({ children, className, tone = 'neutral' }: { children: ReactNode; className?: string; tone?: 'neutral' | 'accent' | 'danger' | 'warning' | 'success' }) {
+export function Badge({
+  children,
+  className,
+  tone = 'neutral',
+}: {
+  children: ReactNode;
+  className?: string;
+  tone?: 'neutral' | 'accent' | 'danger' | 'warning' | 'success';
+}) {
   return (
     <span
       className={cn(
@@ -28,9 +36,23 @@ const ROLE_CLASS: Record<FieldRole, string> = {
   ignore: 'text-role-ignore border-role-ignore/40 line-through',
 };
 
-export function RoleBadge({ role, label, className }: { role: FieldRole; label: string; className?: string }) {
+export function RoleBadge({
+  role,
+  label,
+  className,
+}: {
+  role: FieldRole;
+  label: string;
+  className?: string;
+}) {
   return (
-    <span className={cn('inline-flex items-center rounded border bg-surface px-1.5 py-px text-[11px] font-medium', ROLE_CLASS[role], className)}>
+    <span
+      className={cn(
+        'inline-flex items-center rounded border bg-surface px-1.5 py-px text-[11px] font-medium',
+        ROLE_CLASS[role],
+        className,
+      )}
+    >
       {label}
     </span>
   );

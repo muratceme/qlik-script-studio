@@ -19,7 +19,9 @@ export function defaultScope(ctx: Context): ExprScope {
       const link = ctx.links.get(linkId);
       if (!link || link.type !== 'applyMap' || !link.applyMap) return undefined;
       const def = link.applyMap.defaultValue;
-      return def === null ? `ApplyMap(${qStr(link.applyMap.mapName)}, ${key})` : `ApplyMap(${qStr(link.applyMap.mapName)}, ${key}, ${qStr(def)})`;
+      return def === null
+        ? `ApplyMap(${qStr(link.applyMap.mapName)}, ${key})`
+        : `ApplyMap(${qStr(link.applyMap.mapName)}, ${key}, ${qStr(def)})`;
     },
   };
 }

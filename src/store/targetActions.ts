@@ -51,13 +51,24 @@ export function addFieldColumn(targetId: string, ref: FieldRef): void {
   update((p) => {
     const target = p.targets.find((t) => t.id === targetId);
     if (!target) return;
-    if (target.columns.some((c) => c.kind !== 'calculated' && c.ref.fieldId === ref.fieldId && c.ref.tableId === ref.tableId)) return;
+    if (
+      target.columns.some(
+        (c) => c.kind !== 'calculated' && c.ref.fieldId === ref.fieldId && c.ref.tableId === ref.tableId,
+      )
+    )
+      return;
     if (!target.primarySourceId) target.primarySourceId = ref.tableId;
     const source = p.sources.find((s) => s.id === ref.tableId);
     const field = source?.fields.find((f) => f.id === ref.fieldId);
     const fieldName = field ? (field.alias ?? field.name) : 'Field';
     if (field?.role === 'measure') {
-      target.columns.push({ id: createId(), kind: 'measure', ref, aggregation: 'sum', alias: `Sum of ${fieldName}` });
+      target.columns.push({
+        id: createId(),
+        kind: 'measure',
+        ref,
+        aggregation: 'sum',
+        alias: `Sum of ${fieldName}`,
+      });
     } else {
       target.columns.push({ id: createId(), kind: 'field', ref, alias: null });
     }
@@ -65,7 +76,11 @@ export function addFieldColumn(targetId: string, ref: FieldRef): void {
 }
 
 /** Switches a field column between plain (group by) and aggregated. */
-export function setColumnAggregation(targetId: string, columnId: string, aggregation: Aggregation | null): void {
+export function setColumnAggregation(
+  targetId: string,
+  columnId: string,
+  aggregation: Aggregation | null,
+): void {
   update((p) => {
     const target = p.targets.find((t) => t.id === targetId);
     if (!target) return;
@@ -79,7 +94,10 @@ export function setColumnAggregation(targetId: string, columnId: string, aggrega
       target.columns[index] = { id: column.id, kind: 'field', ref: column.ref, alias: null };
     } else {
       const label = aggregation.charAt(0).toUpperCase() + aggregation.slice(1).replace(/([A-Z])/g, ' $1');
-      const alias = column.kind === 'measure' && !column.alias.startsWith(`${label} of`) && !/ of /.test(column.alias) ? column.alias : `${label} of ${fieldName}`;
+      const alias =
+        column.kind === 'measure' && !column.alias.startsWith(`${label} of`) && !/ of /.test(column.alias)
+          ? column.alias
+          : `${label} of ${fieldName}`;
       target.columns[index] = { id: column.id, kind: 'measure', ref: column.ref, aggregation, alias };
     }
   });
@@ -94,7 +112,11 @@ export function addCalculatedColumn(targetId: string, alias: string, expr: Expr)
   return id;
 }
 
-export function updateColumn(targetId: string, columnId: string, recipe: (column: TargetColumn) => void): void {
+export function updateColumn(
+  targetId: string,
+  columnId: string,
+  recipe: (column: TargetColumn) => void,
+): void {
   update((p) => {
     const target = p.targets.find((t) => t.id === targetId);
     const column = target?.columns.find((c) => c.id === columnId);
@@ -135,7 +157,9 @@ export function setCalendar(dateField: FieldRef | null, enabled: boolean): void 
   });
 }
 
-export function updateCalendar(recipe: (calendar: NonNullable<ReturnType<typeof newCalendar>>) => void): void {
+export function updateCalendar(
+  recipe: (calendar: NonNullable<ReturnType<typeof newCalendar>>) => void,
+): void {
   update((p) => {
     if (!p.calendar) p.calendar = newCalendar(null);
     recipe(p.calendar);

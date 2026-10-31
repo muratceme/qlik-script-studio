@@ -133,3 +133,11 @@ body {
   --xy-controls-button-border-color-default: var(--border);
   --xy-minimap-background-color-default: var(--surface-raised);
 }
+.react-flow__minimap {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.react-flow__minimap-mask {
+  fill: color-mix(in srgb, var(--fg) 12%, transparent);
+}

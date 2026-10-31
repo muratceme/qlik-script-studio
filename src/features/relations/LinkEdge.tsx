@@ -4,8 +4,26 @@ import { cn } from '@/lib/cn';
 import type { LinkEdge as LinkEdgeType } from './graph';
 import { useEdgeClick } from './edgeClick';
 
-function LinkEdgeComponent({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data, selected, markerEnd }: EdgeProps<LinkEdgeType>) {
-  const [path, labelX, labelY] = getBezierPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition });
+function LinkEdgeComponent({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+  selected,
+  markerEnd,
+}: EdgeProps<LinkEdgeType>) {
+  const [path, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+  });
   const onLabelClick = useEdgeClick();
   const implicit = data?.type === 'implicit';
   const problem = data?.problem ?? false;
@@ -17,7 +35,13 @@ function LinkEdgeComponent({ id, sourceX, sourceY, targetX, targetY, sourcePosit
         path={path}
         markerEnd={merge ? markerEnd : undefined}
         style={{
-          stroke: problem ? 'var(--danger)' : selected ? 'var(--accent)' : implicit ? 'var(--fg-subtle)' : 'var(--border-strong)',
+          stroke: problem
+            ? 'var(--danger)'
+            : selected
+              ? 'var(--accent)'
+              : implicit
+                ? 'var(--fg-subtle)'
+                : 'var(--border-strong)',
           strokeWidth: selected || problem ? 2.5 : 1.8,
           strokeDasharray: implicit ? '4 4' : undefined,
         }}
@@ -32,7 +56,11 @@ function LinkEdgeComponent({ id, sourceX, sourceY, targetX, targetY, sourcePosit
           className={cn(
             'nodrag nopan pointer-events-auto absolute max-w-40 truncate rounded border px-1.5 py-px text-[10px] font-semibold shadow-sm',
             data?.linkId ? 'cursor-pointer' : 'cursor-default',
-            problem ? 'border-danger bg-danger-soft text-danger' : implicit ? 'border-border bg-surface text-fg-subtle' : 'border-border bg-surface-raised text-fg-muted',
+            problem
+              ? 'border-danger bg-danger-soft text-danger'
+              : implicit
+                ? 'border-border bg-surface text-fg-subtle'
+                : 'border-border bg-surface-raised text-fg-muted',
           )}
         >
           {data?.label}

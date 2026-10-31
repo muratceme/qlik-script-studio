@@ -30,7 +30,10 @@ export function targetScope(ctx: Context, target: TargetTable): ExprScope {
       if (link.leftTableId !== primary || !MERGE_TYPES.has(link.type)) continue;
       if (hasCompositeKey(link)) continue;
       for (const p of link.pairs) {
-        renamed.set(`${link.rightTableId}:${p.rightFieldId}`, ctx.outName({ tableId: primary, fieldId: p.leftFieldId }));
+        renamed.set(
+          `${link.rightTableId}:${p.rightFieldId}`,
+          ctx.outName({ tableId: primary, fieldId: p.leftFieldId }),
+        );
       }
     }
   }

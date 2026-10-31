@@ -1,11 +1,29 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, FilePlus2, Github, Moon, Redo2, Sparkles, Sun, Undo2, Upload, Languages } from 'lucide-react';
+import {
+  Download,
+  FilePlus2,
+  Github,
+  Moon,
+  Redo2,
+  Settings,
+  Sparkles,
+  Sun,
+  Undo2,
+  Upload,
+  Languages,
+} from 'lucide-react';
 import { Button, IconButton, Dialog } from '@/components/ui';
 import { useProjectStore, useTemporalStore } from '@/store/projectStore';
 import { useUiStore, resolveTheme } from '@/store/uiStore';
-import { exportProject, importProjectFile, loadSampleProject, startNewProject } from '@/features/project/projectActions';
+import {
+  exportProject,
+  importProjectFile,
+  loadSampleProject,
+  startNewProject,
+} from '@/features/project/projectActions';
 import { toast } from '@/components/ui/Toast';
+import { SettingsDialog } from '@/features/project/SettingsDialog';
 
 const REPO_URL = 'https://github.com/muratceme/qlik-script-studio';
 
@@ -20,6 +38,7 @@ export function AppHeader() {
   const setLanguage = useUiStore((s) => s.setLanguage);
   const fileInput = useRef<HTMLInputElement>(null);
   const [importIssues, setImportIssues] = useState<string[] | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const isEmpty = project.sources.length === 0 && project.targets.length === 0;
 
@@ -48,12 +67,21 @@ export function AppHeader() {
         <IconButton label={t('app.undo')} size="sm" onClick={() => undo()} disabled={pastStates.length === 0}>
           <Undo2 />
         </IconButton>
-        <IconButton label={t('app.redo')} size="sm" onClick={() => redo()} disabled={futureStates.length === 0}>
+        <IconButton
+          label={t('app.redo')}
+          size="sm"
+          onClick={() => redo()}
+          disabled={futureStates.length === 0}
+        >
           <Redo2 />
         </IconButton>
       </div>
       <div className="ml-auto flex flex-wrap items-center gap-1">
-        <Button size="sm" icon={<Sparkles />} onClick={() => confirmReplace(t('app.loadSampleConfirm')) && loadSampleProject()}>
+        <Button
+          size="sm"
+          icon={<Sparkles />}
+          onClick={() => confirmReplace(t('app.loadSampleConfirm')) && loadSampleProject()}
+        >
           {t('app.loadSample')}
         </Button>
         <Button
@@ -80,6 +108,9 @@ export function AppHeader() {
           {t('app.exportJson')}
         </Button>
         <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
+        <IconButton label={t('app.settings')} size="sm" onClick={() => setSettingsOpen(true)}>
+          <Settings />
+        </IconButton>
         <IconButton
           label={`${t('app.language')}: ${language.toUpperCase()}`}
           size="sm"
@@ -112,7 +143,13 @@ export function AppHeader() {
           <Github className="size-4" />
         </a>
       </div>
-      <Dialog open={importIssues !== null} onClose={() => setImportIssues(null)} title={t('app.importJson')} width="sm">
+      <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <Dialog
+        open={importIssues !== null}
+        onClose={() => setImportIssues(null)}
+        title={t('app.importJson')}
+        width="sm"
+      >
         <p className="text-sm text-danger">{t('app.importFailed')}</p>
         {importIssues && importIssues.length > 0 ? (
           <>

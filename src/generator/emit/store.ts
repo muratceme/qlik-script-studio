@@ -11,6 +11,8 @@ export function emitStores(ctx: Context, w: ScriptWriter): void {
   for (const target of ctx.project.targets) {
     if (!target.store.enabled) continue;
     w.comment(`Store ${target.name} as QVD`);
-    w.line(`STORE ${qTable(target.name)} INTO ${qPath(storePath(ctx, target.name, target.store.path))} (qvd);`);
+    w.line(
+      `STORE ${qTable(target.name)} INTO ${qPath(storePath(ctx, target.name, target.store.path))} (qvd);`,
+    );
   }
 }

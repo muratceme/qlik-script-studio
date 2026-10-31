@@ -6,7 +6,14 @@ import { DATA_TYPES, FIELD_ROLES } from '@/model/types';
 import { Button, EmptyState, RoleBadge, Select, TextInput } from '@/components/ui';
 import { useProjectStore } from '@/store/projectStore';
 import { updateField } from '@/store/sourceActions';
-import { applyAllSuggestions, applySuggestion, bulkSetRole, bulkSetType, clearSuggestions, suggestRoles } from '@/store/roleActions';
+import {
+  applyAllSuggestions,
+  applySuggestion,
+  bulkSetRole,
+  bulkSetType,
+  clearSuggestions,
+  suggestRoles,
+} from '@/store/roleActions';
 import { toast } from '@/components/ui/Toast';
 import { cn } from '@/lib/cn';
 
@@ -16,7 +23,10 @@ export function RolesStep() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [lastClicked, setLastClicked] = useState<string | null>(null);
 
-  const rows = useMemo(() => sources.flatMap((s) => s.fields.map((f) => ({ table: s, field: f }))), [sources]);
+  const rows = useMemo(
+    () => sources.flatMap((s) => s.fields.map((f) => ({ table: s, field: f }))),
+    [sources],
+  );
   const suggestionCount = rows.filter((r) => r.field.suggestedRole).length;
   const allIds = rows.map((r) => r.field.id);
 
@@ -125,7 +135,11 @@ export function RolesStep() {
               return (
                 <tr
                   key={field.id}
-                  className={cn('border-t border-border', isSelected && 'bg-accent-soft/30', first && index > 0 && 'border-t-2')}
+                  className={cn(
+                    'border-t border-border',
+                    isSelected && 'bg-accent-soft/30',
+                    first && index > 0 && 'border-t-2',
+                  )}
                 >
                   <td className="px-2 py-1">
                     <input
@@ -137,7 +151,9 @@ export function RolesStep() {
                       onChange={() => undefined}
                     />
                   </td>
-                  <td className={cn('px-2 py-1 text-xs', first ? 'font-semibold text-fg' : 'text-fg-subtle')}>{first ? table.name : '·'}</td>
+                  <td className={cn('px-2 py-1 text-xs', first ? 'font-semibold text-fg' : 'text-fg-subtle')}>
+                    {first ? table.name : '·'}
+                  </td>
                   <td className="px-2 py-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{field.name}</span>
@@ -160,10 +176,16 @@ export function RolesStep() {
                         aria-label={t('rolesStep.setRole')}
                         className="!h-8 !w-32 !text-xs"
                         value={field.role}
-                        onChange={(e) => updateField(table.id, field.id, (f) => void (f.role = e.target.value as FieldRole))}
+                        onChange={(e) =>
+                          updateField(table.id, field.id, (f) => void (f.role = e.target.value as FieldRole))
+                        }
                         options={FIELD_ROLES.map((r) => ({ value: r, label: t(`roles.${r}`) }))}
                       />
-                      <RoleBadge role={field.role} label={t(`roles.${field.role}`)} className="hidden xl:inline-flex" />
+                      <RoleBadge
+                        role={field.role}
+                        label={t(`roles.${field.role}`)}
+                        className="hidden xl:inline-flex"
+                      />
                     </div>
                   </td>
                   <td className="px-2 py-1">
@@ -171,7 +193,9 @@ export function RolesStep() {
                       aria-label={t('common.type')}
                       className="!h-8 !w-28 !text-xs"
                       value={field.dataType}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.dataType = e.target.value as DataType))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.dataType = e.target.value as DataType))
+                      }
                       options={DATA_TYPES.map((d) => ({ value: d, label: t(`dataTypes.${d}`) }))}
                     />
                   </td>
@@ -181,7 +205,9 @@ export function RolesStep() {
                       className="!h-8 !w-36"
                       placeholder={t('common.optional')}
                       value={field.alias ?? ''}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.alias = e.target.value || null))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.alias = e.target.value || null))
+                      }
                     />
                   </td>
                   <td className="px-2 py-1">
@@ -193,7 +219,9 @@ export function RolesStep() {
                         disabled={table.kind === 'qvd'}
                         title={t('rolesStep.dateFormatHint')}
                         value={field.dateFormat ?? ''}
-                        onChange={(e) => updateField(table.id, field.id, (f) => void (f.dateFormat = e.target.value || null))}
+                        onChange={(e) =>
+                          updateField(table.id, field.id, (f) => void (f.dateFormat = e.target.value || null))
+                        }
                       />
                     ) : (
                       <span className="text-xs text-fg-subtle">—</span>
@@ -205,7 +233,9 @@ export function RolesStep() {
                       className="accent-accent"
                       aria-label={t('rolesStep.isUnique')}
                       checked={field.isUnique}
-                      onChange={(e) => updateField(table.id, field.id, (f) => void (f.isUnique = e.target.checked))}
+                      onChange={(e) =>
+                        updateField(table.id, field.id, (f) => void (f.isUnique = e.target.checked))
+                      }
                     />
                   </td>
                 </tr>

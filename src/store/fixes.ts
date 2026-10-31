@@ -20,7 +20,9 @@ export function applyFix(project: Project, fix: Fix): void {
       return;
     }
     case 'qualifyTable': {
-      const table = project.sources.find((s) => s.id === fix.tableId) ?? project.targets.find((t) => t.id === fix.tableId);
+      const table =
+        project.sources.find((s) => s.id === fix.tableId) ??
+        project.targets.find((t) => t.id === fix.tableId);
       if (table) table.qualify = true;
       return;
     }
@@ -43,7 +45,9 @@ export function applyFix(project: Project, fix: Fix): void {
       return;
     }
     case 'keepTable': {
-      const table = project.sources.find((s) => s.id === fix.tableId) ?? project.targets.find((t) => t.id === fix.tableId);
+      const table =
+        project.sources.find((s) => s.id === fix.tableId) ??
+        project.targets.find((t) => t.id === fix.tableId);
       if (table) table.keepInModel = true;
       return;
     }

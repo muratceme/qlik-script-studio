@@ -47,7 +47,9 @@ export function Dialog({ open, onClose, title, children, footer, width = 'md' }:
             </IconButton>
           </header>
           <div className="overflow-y-auto px-5 py-4">{children}</div>
-          {footer ? <footer className="flex justify-end gap-2 border-t border-border px-5 py-3">{footer}</footer> : null}
+          {footer ? (
+            <footer className="flex justify-end gap-2 border-t border-border px-5 py-3">{footer}</footer>
+          ) : null}
         </div>
       ) : null}
     </dialog>

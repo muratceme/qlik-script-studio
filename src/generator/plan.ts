@@ -87,7 +87,12 @@ export function extraColumns(ctx: Context, tableId: string, scope: ExprScope): E
   const out: ExtraColumn[] = [];
   const seen = new Set<string>();
   for (const link of ctx.project.links) {
-    if (hasCompositeKey(link) && link.type !== 'applyMap' && link.type !== 'noConcatenate' && link.type !== 'concatenate') {
+    if (
+      hasCompositeKey(link) &&
+      link.type !== 'applyMap' &&
+      link.type !== 'noConcatenate' &&
+      link.type !== 'concatenate'
+    ) {
       const key = link.compositeKey!;
       if (link.leftTableId === tableId && !seen.has(key.name)) {
         seen.add(key.name);

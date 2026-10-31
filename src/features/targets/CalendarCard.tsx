@@ -15,7 +15,12 @@ export function CalendarCard() {
   const options: { key: string; label: string; ref: FieldRef }[] = [];
   for (const s of project.sources) {
     for (const f of s.fields) {
-      if (f.role === 'date' || f.dataType === 'date') options.push({ key: `${s.id}:${f.id}`, label: `${s.name}.${f.alias ?? f.name}`, ref: { tableId: s.id, fieldId: f.id } });
+      if (f.role === 'date' || f.dataType === 'date')
+        options.push({
+          key: `${s.id}:${f.id}`,
+          label: `${s.name}.${f.alias ?? f.name}`,
+          ref: { tableId: s.id, fieldId: f.id },
+        });
     }
   }
   for (const tgt of project.targets) {
@@ -23,7 +28,12 @@ export function CalendarCard() {
       if (c.kind !== 'field') continue;
       const src = project.sources.find((s) => s.id === c.ref.tableId);
       const f = src?.fields.find((x) => x.id === c.ref.fieldId);
-      if (f && (f.role === 'date' || f.dataType === 'date')) options.push({ key: `${tgt.id}:${c.id}`, label: `${tgt.name}.${c.alias ?? f.alias ?? f.name}`, ref: { tableId: tgt.id, fieldId: c.id } });
+      if (f && (f.role === 'date' || f.dataType === 'date'))
+        options.push({
+          key: `${tgt.id}:${c.id}`,
+          label: `${tgt.name}.${c.alias ?? f.alias ?? f.name}`,
+          ref: { tableId: tgt.id, fieldId: c.id },
+        });
     }
   }
   const currentKey = calendar?.dateField ? `${calendar.dateField.tableId}:${calendar.dateField.fieldId}` : '';
@@ -62,10 +72,18 @@ export function CalendarCard() {
                     )}
                   </Labeled>
                   <Labeled label={t('design.calendarTable')}>
-                    {(id) => <TextInput id={id} value={calendar?.tableName ?? 'Calendar'} onChange={(e) => updateCalendar((c) => void (c.tableName = e.target.value))} />}
+                    {(id) => (
+                      <TextInput
+                        id={id}
+                        value={calendar?.tableName ?? 'Calendar'}
+                        onChange={(e) => updateCalendar((c) => void (c.tableName = e.target.value))}
+                      />
+                    )}
                   </Labeled>
                   <fieldset className="sm:col-span-2">
-                    <legend className="mb-1 text-xs font-medium text-fg-muted">{t('design.calendarParts')}</legend>
+                    <legend className="mb-1 text-xs font-medium text-fg-muted">
+                      {t('design.calendarParts')}
+                    </legend>
                     <div className="flex flex-wrap gap-x-4 gap-y-1">
                       {DATE_PARTS.map((part: DatePart) => (
                         <Checkbox
@@ -74,7 +92,9 @@ export function CalendarCard() {
                           checked={calendar?.parts.includes(part) ?? false}
                           onChange={(e) =>
                             updateCalendar((c) => {
-                              c.parts = e.target.checked ? DATE_PARTS.filter((p) => p === part || c.parts.includes(p)) : c.parts.filter((p) => p !== part);
+                              c.parts = e.target.checked
+                                ? DATE_PARTS.filter((p) => p === part || c.parts.includes(p))
+                                : c.parts.filter((p) => p !== part);
                             })
                           }
                         />

@@ -16,7 +16,13 @@ export function SourceTableEditor({ table }: { table: SourceTable }) {
     <div className="flex min-h-0 min-w-0 flex-col gap-5">
       <section className="grid grid-cols-1 gap-3 rounded-xl border border-border bg-surface-raised p-4 sm:grid-cols-2">
         <Labeled label={t('sources.tableName')}>
-          {(id) => <TextInput id={id} value={table.name} onChange={(e) => set((tbl) => void (tbl.name = e.target.value))} />}
+          {(id) => (
+            <TextInput
+              id={id}
+              value={table.name}
+              onChange={(e) => set((tbl) => void (tbl.name = e.target.value))}
+            />
+          )}
         </Labeled>
         <Labeled label={t('sources.kind')}>
           {(id) => (
@@ -45,7 +51,9 @@ export function SourceTableEditor({ table }: { table: SourceTable }) {
               <TextInput
                 id={id}
                 value={table.path}
-                placeholder={table.kind === 'qvd' ? 'Sales.qvd' : table.kind === 'excel' ? 'Sales.xlsx' : 'Sales.csv'}
+                placeholder={
+                  table.kind === 'qvd' ? 'Sales.qvd' : table.kind === 'excel' ? 'Sales.xlsx' : 'Sales.csv'
+                }
                 onChange={(e) => set((tbl) => void (tbl.path = e.target.value))}
               />
             )}
@@ -54,7 +62,13 @@ export function SourceTableEditor({ table }: { table: SourceTable }) {
         {table.kind === 'excel' && table.excel ? (
           <>
             <Labeled label={t('sources.sheet')}>
-              {(id) => <TextInput id={id} value={table.excel!.sheet} onChange={(e) => set((tbl) => void (tbl.excel!.sheet = e.target.value))} />}
+              {(id) => (
+                <TextInput
+                  id={id}
+                  value={table.excel!.sheet}
+                  onChange={(e) => set((tbl) => void (tbl.excel!.sheet = e.target.value))}
+                />
+              )}
             </Labeled>
             <Labeled label={t('sources.headerRow')}>
               {(id) => (
@@ -63,7 +77,9 @@ export function SourceTableEditor({ table }: { table: SourceTable }) {
                   type="number"
                   min={1}
                   value={table.excel!.headerRow}
-                  onChange={(e) => set((tbl) => void (tbl.excel!.headerRow = Math.max(1, Number(e.target.value) || 1)))}
+                  onChange={(e) =>
+                    set((tbl) => void (tbl.excel!.headerRow = Math.max(1, Number(e.target.value) || 1)))
+                  }
                 />
               )}
             </Labeled>
@@ -100,8 +116,16 @@ export function SourceTableEditor({ table }: { table: SourceTable }) {
                 />
               )}
             </Labeled>
-            <Checkbox label={t('sources.hasHeader')} checked={table.csv.hasHeader} onChange={(e) => set((tbl) => void (tbl.csv!.hasHeader = e.target.checked))} />
-            <Checkbox label={t('sources.msq')} checked={table.csv.msq} onChange={(e) => set((tbl) => void (tbl.csv!.msq = e.target.checked))} />
+            <Checkbox
+              label={t('sources.hasHeader')}
+              checked={table.csv.hasHeader}
+              onChange={(e) => set((tbl) => void (tbl.csv!.hasHeader = e.target.checked))}
+            />
+            <Checkbox
+              label={t('sources.msq')}
+              checked={table.csv.msq}
+              onChange={(e) => set((tbl) => void (tbl.csv!.msq = e.target.checked))}
+            />
           </>
         ) : null}
         {table.kind === 'sql' && table.sql ? (

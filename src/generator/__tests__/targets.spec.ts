@@ -13,7 +13,12 @@ describe('targets', () => {
       targets: [
         target('t', 'Sales_By_Customer', 's', [
           col('c1', 's', 's-c'),
-          { id: 'c2', kind: 'calculated', alias: 'Year', expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') } },
+          {
+            id: 'c2',
+            kind: 'calculated',
+            alias: 'Year',
+            expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') },
+          },
           { id: 'c3', kind: 'measure', ref: ref('s', 's-a'), aggregation: 'sum', alias: 'Total' },
           { id: 'c4', kind: 'measure', ref: ref('s', 's-o'), aggregation: 'countDistinct', alias: 'Orders' },
           { id: 'c5', kind: 'measure', ref: ref('s', 's-a'), aggregation: 'avg', alias: 'Avg Amount' },
@@ -32,8 +37,13 @@ describe('targets', () => {
     const p = project({
       sources: starSources(),
       targets: [
-        target('t', 'Customer_List', 's', [col('c1', 's', 's-c', 'Customer')], { distinct: true, store: { enabled: true, path: '' } }),
-        target('t2', 'Custom_Path', 's', [col('c1', 's', 's-o')], { store: { enabled: true, path: 'lib://Archive/orders.qvd' } }),
+        target('t', 'Customer_List', 's', [col('c1', 's', 's-c', 'Customer')], {
+          distinct: true,
+          store: { enabled: true, path: '' },
+        }),
+        target('t2', 'Custom_Path', 's', [col('c1', 's', 's-o')], {
+          store: { enabled: true, path: 'lib://Archive/orders.qvd' },
+        }),
       ],
     });
     const script = generateScript(p);
@@ -46,7 +56,9 @@ describe('targets', () => {
 
   it('renders every filter operator and nested AND/OR groups', () => {
     const filter: ConditionGroup = {
-      id: 'g', kind: 'group', logic: 'and',
+      id: 'g',
+      kind: 'group',
+      logic: 'and',
       items: [
         { id: '1', kind: 'condition', left: f('s', 's-a'), op: 'gt', values: [100] },
         { id: '2', kind: 'condition', left: f('s', 's-a'), op: 'gte', values: [100] },
@@ -54,7 +66,9 @@ describe('targets', () => {
         { id: '4', kind: 'condition', left: f('s', 's-a'), op: 'lte', values: [1000] },
         { id: '5', kind: 'condition', left: f('s', 's-c'), op: 'neq', values: [0] },
         {
-          id: 'g2', kind: 'group', logic: 'or',
+          id: 'g2',
+          kind: 'group',
+          logic: 'or',
           items: [
             { id: '6', kind: 'condition', left: f('c', 'c-r'), op: 'eq', values: ['EU'] },
             { id: '7', kind: 'condition', left: f('c', 'c-r'), op: 'in', values: ['TR', 'US'] },
@@ -65,7 +79,13 @@ describe('targets', () => {
         },
         { id: '11', kind: 'condition', left: f('c', 'c-n'), op: 'isNotNull', values: [] },
         { id: '12', kind: 'condition', left: f('c', 'c-r'), op: 'isNull', values: [] },
-        { id: '13', kind: 'condition', left: f('s', 's-d'), op: 'between', values: ['2024-01-01', '2024-12-31'] },
+        {
+          id: '13',
+          kind: 'condition',
+          left: f('s', 's-d'),
+          op: 'between',
+          values: ['2024-01-01', '2024-12-31'],
+        },
       ],
     };
     const p = project({
@@ -79,33 +99,135 @@ describe('targets', () => {
   it('renders every calculated-field kind', () => {
     const columns: TargetColumn[] = [
       col('k', 's', 's-o'),
-      { id: 'x1', kind: 'calculated', alias: 'Full', expr: { kind: 'concat', parts: [f('c', 'c-n'), f('c', 'c-r')], separator: ' - ' } },
-      { id: 'x2', kind: 'calculated', alias: 'Plain Concat', expr: { kind: 'concat', parts: [f('c', 'c-n'), lit('!')], separator: '' } },
-      { id: 'x3', kind: 'calculated', alias: 'Net', expr: { kind: 'arith', op: '*', left: f('s', 's-a'), right: lit(0.8), safeDivide: false } },
-      { id: 'x4', kind: 'calculated', alias: 'Per Unit', expr: { kind: 'arith', op: '/', left: f('s', 's-a'), right: lit(2), safeDivide: true } },
-      { id: 'x5', kind: 'calculated', alias: 'Plain Div', expr: { kind: 'arith', op: '/', left: f('s', 's-a'), right: lit(2), safeDivide: false } },
-      { id: 'x6', kind: 'calculated', alias: 'Share', expr: { kind: 'percent', part: f('s', 's-a'), whole: lit(1000) } },
       {
-        id: 'x7', kind: 'calculated', alias: 'Big',
+        id: 'x1',
+        kind: 'calculated',
+        alias: 'Full',
+        expr: { kind: 'concat', parts: [f('c', 'c-n'), f('c', 'c-r')], separator: ' - ' },
+      },
+      {
+        id: 'x2',
+        kind: 'calculated',
+        alias: 'Plain Concat',
+        expr: { kind: 'concat', parts: [f('c', 'c-n'), lit('!')], separator: '' },
+      },
+      {
+        id: 'x3',
+        kind: 'calculated',
+        alias: 'Net',
+        expr: { kind: 'arith', op: '*', left: f('s', 's-a'), right: lit(0.8), safeDivide: false },
+      },
+      {
+        id: 'x4',
+        kind: 'calculated',
+        alias: 'Per Unit',
+        expr: { kind: 'arith', op: '/', left: f('s', 's-a'), right: lit(2), safeDivide: true },
+      },
+      {
+        id: 'x5',
+        kind: 'calculated',
+        alias: 'Plain Div',
+        expr: { kind: 'arith', op: '/', left: f('s', 's-a'), right: lit(2), safeDivide: false },
+      },
+      {
+        id: 'x6',
+        kind: 'calculated',
+        alias: 'Share',
+        expr: { kind: 'percent', part: f('s', 's-a'), whole: lit(1000) },
+      },
+      {
+        id: 'x7',
+        kind: 'calculated',
+        alias: 'Big',
         expr: {
           kind: 'if',
-          condition: { id: 'g', kind: 'group', logic: 'and', items: [{ id: '1', kind: 'condition', left: f('s', 's-a'), op: 'gt', values: [500] }] },
+          condition: {
+            id: 'g',
+            kind: 'group',
+            logic: 'and',
+            items: [{ id: '1', kind: 'condition', left: f('s', 's-a'), op: 'gt', values: [500] }],
+          },
           then: lit('Large'),
           else: lit('Small'),
         },
       },
-      { id: 'x8', kind: 'calculated', alias: 'Flag', expr: { kind: 'if', condition: { id: 'g', kind: 'group', logic: 'or', items: [] }, then: lit(1), else: null } },
-      { id: 'x9', kind: 'calculated', alias: 'Y', expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') } },
-      { id: 'x10', kind: 'calculated', alias: 'Q', expr: { kind: 'datePart', part: 'quarter', of: f('s', 's-d') } },
-      { id: 'x11', kind: 'calculated', alias: 'M', expr: { kind: 'datePart', part: 'month', of: f('s', 's-d') } },
-      { id: 'x12', kind: 'calculated', alias: 'MN', expr: { kind: 'datePart', part: 'monthName', of: f('s', 's-d') } },
-      { id: 'x13', kind: 'calculated', alias: 'W', expr: { kind: 'datePart', part: 'week', of: f('s', 's-d') } },
-      { id: 'x14', kind: 'calculated', alias: 'D', expr: { kind: 'datePart', part: 'day', of: f('s', 's-d') } },
-      { id: 'x15', kind: 'calculated', alias: 'WD', expr: { kind: 'datePart', part: 'weekday', of: f('s', 's-d') } },
-      { id: 'x16', kind: 'calculated', alias: 'YM', expr: { kind: 'datePart', part: 'yearMonth', of: f('s', 's-d') } },
-      { id: 'x17', kind: 'calculated', alias: 'RowKey', expr: { kind: 'autoNumber', of: f('s', 's-o'), counterName: 'orders' } },
-      { id: 'x18', kind: 'calculated', alias: 'RowKey2', expr: { kind: 'autoNumber', of: f('s', 's-o'), counterName: null } },
-      { id: 'x19', kind: 'calculated', alias: 'Upper', expr: { kind: 'raw', text: ' Upper([Customer Name]) ' } },
+      {
+        id: 'x8',
+        kind: 'calculated',
+        alias: 'Flag',
+        expr: {
+          kind: 'if',
+          condition: { id: 'g', kind: 'group', logic: 'or', items: [] },
+          then: lit(1),
+          else: null,
+        },
+      },
+      {
+        id: 'x9',
+        kind: 'calculated',
+        alias: 'Y',
+        expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') },
+      },
+      {
+        id: 'x10',
+        kind: 'calculated',
+        alias: 'Q',
+        expr: { kind: 'datePart', part: 'quarter', of: f('s', 's-d') },
+      },
+      {
+        id: 'x11',
+        kind: 'calculated',
+        alias: 'M',
+        expr: { kind: 'datePart', part: 'month', of: f('s', 's-d') },
+      },
+      {
+        id: 'x12',
+        kind: 'calculated',
+        alias: 'MN',
+        expr: { kind: 'datePart', part: 'monthName', of: f('s', 's-d') },
+      },
+      {
+        id: 'x13',
+        kind: 'calculated',
+        alias: 'W',
+        expr: { kind: 'datePart', part: 'week', of: f('s', 's-d') },
+      },
+      {
+        id: 'x14',
+        kind: 'calculated',
+        alias: 'D',
+        expr: { kind: 'datePart', part: 'day', of: f('s', 's-d') },
+      },
+      {
+        id: 'x15',
+        kind: 'calculated',
+        alias: 'WD',
+        expr: { kind: 'datePart', part: 'weekday', of: f('s', 's-d') },
+      },
+      {
+        id: 'x16',
+        kind: 'calculated',
+        alias: 'YM',
+        expr: { kind: 'datePart', part: 'yearMonth', of: f('s', 's-d') },
+      },
+      {
+        id: 'x17',
+        kind: 'calculated',
+        alias: 'RowKey',
+        expr: { kind: 'autoNumber', of: f('s', 's-o'), counterName: 'orders' },
+      },
+      {
+        id: 'x18',
+        kind: 'calculated',
+        alias: 'RowKey2',
+        expr: { kind: 'autoNumber', of: f('s', 's-o'), counterName: null },
+      },
+      {
+        id: 'x19',
+        kind: 'calculated',
+        alias: 'Upper',
+        expr: { kind: 'raw', text: ' Upper([Customer Name]) ' },
+      },
     ];
     const p = project({
       sources: starSources(),
@@ -120,7 +242,12 @@ describe('targets', () => {
       sources: starSources(),
       targets: [
         target('t', 'ByYear', 's', [
-          { id: 'x', kind: 'calculated', alias: 'Year', expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') } },
+          {
+            id: 'x',
+            kind: 'calculated',
+            alias: 'Year',
+            expr: { kind: 'datePart', part: 'year', of: f('s', 's-d') },
+          },
           { id: 'm', kind: 'measure', ref: ref('s', 's-a'), aggregation: 'sum', alias: 'Total' },
         ]),
       ],
@@ -146,10 +273,19 @@ describe('targets', () => {
   });
 
   it('rejects fields from tables that are not joined into the primary table', () => {
-    const p = project({ sources: starSources(), targets: [target('t', 'Bad', 's', [col('c1', 's', 's-o'), col('c2', 'c', 'c-n')])] });
+    const p = project({
+      sources: starSources(),
+      targets: [target('t', 'Bad', 's', [col('c1', 's', 's-o'), col('c2', 'c', 'c-n')])],
+    });
     const errors = validateModel(p);
     expect(errors.map((e) => e.code)).toEqual(['FIELD_NOT_REACHABLE']);
-    expect(errors[0]!.fixes[0]).toMatchObject({ kind: 'createLink', type: 'leftJoin', leftTableId: 's', rightTableId: 'c', pairs: [{ leftFieldId: 's-c', rightFieldId: 'c-c' }] });
+    expect(errors[0]!.fixes[0]).toMatchObject({
+      kind: 'createLink',
+      type: 'leftJoin',
+      leftTableId: 's',
+      rightTableId: 'c',
+      pairs: [{ leftFieldId: 's-c', rightFieldId: 'c-c' }],
+    });
   });
 
   it('rejects ignored fields, empty targets, missing primaries, duplicate columns and empty raw expressions', () => {
@@ -162,12 +298,25 @@ describe('targets', () => {
         target('t2', 'NoPrimary', 's', [col('c', 's', 's-o')], { primarySourceId: null }),
         target('t3', 'Dupes', 's', [col('c1', 's', 's-o', 'X'), col('c2', 's', 's-c', 'x')]),
         target('t4', 'Ignored', 's', [col('c1', 's', 's-a')]),
-        target('t5', 'Raw', 's', [{ id: 'r', kind: 'calculated', alias: 'R', expr: { kind: 'raw', text: '  ' } }]),
+        target('t5', 'Raw', 's', [
+          { id: 'r', kind: 'calculated', alias: 'R', expr: { kind: 'raw', text: '  ' } },
+        ]),
         target('t6', 'Dangling', 's', [col('c1', 's', 'nope')]),
       ],
     });
-    expect(validateModel(p).map((e) => e.code).sort()).toEqual(
-      ['DUPLICATE_FIELD_NAME', 'FIELD_IGNORED', 'FIELD_NOT_FOUND', 'RAW_EXPRESSION_EMPTY', 'TARGET_NO_COLUMNS', 'TARGET_PRIMARY_MISSING'].sort(),
+    expect(
+      validateModel(p)
+        .map((e) => e.code)
+        .sort(),
+    ).toEqual(
+      [
+        'DUPLICATE_FIELD_NAME',
+        'FIELD_IGNORED',
+        'FIELD_NOT_FOUND',
+        'RAW_EXPRESSION_EMPTY',
+        'TARGET_NO_COLUMNS',
+        'TARGET_PRIMARY_MISSING',
+      ].sort(),
     );
   });
 });

@@ -119,14 +119,7 @@ export interface Field {
 }
 
 export type Aggregation =
-  | 'sum'
-  | 'count'
-  | 'countDistinct'
-  | 'avg'
-  | 'min'
-  | 'max'
-  | 'firstValue'
-  | 'lastValue';
+  'sum' | 'count' | 'countDistinct' | 'avg' | 'min' | 'max' | 'firstValue' | 'lastValue';
 
 export interface FieldRef {
   tableId: string;

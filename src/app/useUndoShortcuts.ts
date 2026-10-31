@@ -6,7 +6,8 @@ export function useUndoShortcuts(): void {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      const editing = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+      const editing =
+        target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
       if (editing) return;
       const mod = e.ctrlKey || e.metaKey;
       if (!mod) return;

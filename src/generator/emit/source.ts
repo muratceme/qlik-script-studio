@@ -26,7 +26,8 @@ function resolvePath(ctx: Context, table: SourceTable): string {
 
 /** Expression for a field as it is read from the source, with optional date parsing. */
 function fieldExpr(table: SourceTable, field: SourceTable['fields'][number], position: number): string {
-  const raw = table.kind === 'csv' && table.csv && !table.csv.hasHeader ? `@${position + 1}` : qName(field.name);
+  const raw =
+    table.kind === 'csv' && table.csv && !table.csv.hasHeader ? `@${position + 1}` : qName(field.name);
   if (field.dateFormat && table.kind !== 'qvd') {
     return `Date(Date#(${raw}, ${qStr(field.dateFormat)}))`;
   }
@@ -104,7 +105,9 @@ export function emitSource(ctx: Context, w: ScriptWriter, table: SourceTable): v
   if (table.kind === 'sql') {
     const connection = table.connectionId ? ctx.connections.get(table.connectionId) : undefined;
     if (connection) {
-      w.line(`${ctx.project.settings.dialect === 'view' ? 'CONNECT TO' : 'LIB CONNECT TO'} ${qStr(connection.name)};`);
+      w.line(
+        `${ctx.project.settings.dialect === 'view' ? 'CONNECT TO' : 'LIB CONNECT TO'} ${qStr(connection.name)};`,
+      );
     }
   }
   w.line(`${qTable(table.name)}:`);
@@ -168,7 +171,12 @@ export function emitMappingsFor(ctx: Context, w: ScriptWriter, sourceId: string)
     w.comment(`Mapping ${link.applyMap.mapName}: ${key} -> ${value}`);
     w.line(`${qTable(link.applyMap.mapName)}:`);
     w.line('MAPPING LOAD');
-    w.lines(formatColumns([{ expr: qName(key), alias: null }, { expr: qName(value), alias: null }]));
+    w.lines(
+      formatColumns([
+        { expr: qName(key), alias: null },
+        { expr: qName(value), alias: null },
+      ]),
+    );
     w.line(`RESIDENT ${qTable(ctx.tableName(sourceId))};`);
     w.blank();
   }

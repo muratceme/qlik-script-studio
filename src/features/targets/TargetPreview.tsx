@@ -12,14 +12,26 @@ export function TargetPreview({ project, target }: { project: Project; target: T
 
   const columns = target.columns.map((c) => {
     if (c.kind === 'calculated') {
-      return { id: c.id, name: c.alias, role: 'dimension' as const, values: rows.map(() => `ƒ ${previewExpr(project, target, c.expr)}`), roleLabel: t('design.calculated') };
+      return {
+        id: c.id,
+        name: c.alias,
+        role: 'dimension' as const,
+        values: rows.map(() => `ƒ ${previewExpr(project, target, c.expr)}`),
+        roleLabel: t('design.calculated'),
+      };
     }
     const source = project.sources.find((s) => s.id === c.ref.tableId);
     const idx = source?.fields.findIndex((f) => f.id === c.ref.fieldId) ?? -1;
     const field = source?.fields[idx];
     const name = c.kind === 'measure' ? c.alias : (c.alias ?? field?.alias ?? field?.name ?? '?');
     const local = source?.id === primary?.id;
-    const values = rows.map((r) => (c.kind === 'measure' ? `Σ ${t(`aggregations.${c.aggregation}`)}` : local && idx >= 0 ? (r[idx] ?? '') : '…'));
+    const values = rows.map((r) =>
+      c.kind === 'measure'
+        ? `Σ ${t(`aggregations.${c.aggregation}`)}`
+        : local && idx >= 0
+          ? (r[idx] ?? '')
+          : '…',
+    );
     const role = c.kind === 'measure' ? 'measure' : (field?.role ?? 'dimension');
     return { id: c.id, name, role, values, roleLabel: t(`roles.${role}`) };
   });
@@ -34,7 +46,10 @@ export function TargetPreview({ project, target }: { project: Project; target: T
           <thead>
             <tr>
               {columns.map((c) => (
-                <th key={c.id} className="whitespace-nowrap bg-surface-sunken px-2 py-1 text-left align-top font-medium">
+                <th
+                  key={c.id}
+                  className="whitespace-nowrap bg-surface-sunken px-2 py-1 text-left align-top font-medium"
+                >
                   <div>{c.name}</div>
                   <RoleBadge role={c.role} label={c.roleLabel} className="mt-0.5" />
                 </th>
@@ -52,7 +67,10 @@ export function TargetPreview({ project, target }: { project: Project; target: T
               rows.map((_, i) => (
                 <tr key={i} className="border-t border-border">
                   {columns.map((c) => (
-                    <td key={c.id} className="max-w-48 truncate whitespace-nowrap px-2 py-1 font-mono text-fg-muted">
+                    <td
+                      key={c.id}
+                      className="max-w-48 truncate whitespace-nowrap px-2 py-1 font-mono text-fg-muted"
+                    >
                       {c.values[i]}
                     </td>
                   ))}

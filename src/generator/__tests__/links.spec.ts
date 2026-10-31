@@ -3,17 +3,22 @@ import { generateScript, validateModel } from '@/generator';
 import { col, field, link, project, ref, source, starSources, target } from './helpers';
 
 describe('links', () => {
-  it.each(['leftJoin', 'rightJoin', 'innerJoin', 'outerJoin'] as const)('%s renders the right table RESIDENT into the left', (type) => {
-    const p = project({
-      sources: starSources(),
-      links: [link('l', type, 's', 'c', [['s-c', 'c-c']])],
-      targets: [target('t', 'Fact', 's', [col('a', 's', 's-o'), col('b', 'c', 'c-n')])],
-    });
-    const script = generateScript(p);
-    expect(script).toContain(`${type.replace('Join', '').toUpperCase()} JOIN (Sales)\nLOAD\n    CustomerID,\n    [Customer Name],\n    Region\nRESIDENT Customers;`);
-    expect(script.indexOf('JOIN (Sales)')).toBeLessThan(script.indexOf('Fact:'));
-    expect(script).toContain('DROP TABLE Customers;');
-  });
+  it.each(['leftJoin', 'rightJoin', 'innerJoin', 'outerJoin'] as const)(
+    '%s renders the right table RESIDENT into the left',
+    (type) => {
+      const p = project({
+        sources: starSources(),
+        links: [link('l', type, 's', 'c', [['s-c', 'c-c']])],
+        targets: [target('t', 'Fact', 's', [col('a', 's', 's-o'), col('b', 'c', 'c-n')])],
+      });
+      const script = generateScript(p);
+      expect(script).toContain(
+        `${type.replace('Join', '').toUpperCase()} JOIN (Sales)\nLOAD\n    CustomerID,\n    [Customer Name],\n    Region\nRESIDENT Customers;`,
+      );
+      expect(script.indexOf('JOIN (Sales)')).toBeLessThan(script.indexOf('Fact:'));
+      expect(script).toContain('DROP TABLE Customers;');
+    },
+  );
 
   it('renames keys with different names and emits full snapshot', () => {
     const sources = starSources();
@@ -34,7 +39,9 @@ describe('links', () => {
   it.each(['leftKeep', 'rightKeep', 'innerKeep'] as const)('%s uses a temporary table and rename', (type) => {
     const p = project({ sources: starSources(), links: [link('l', type, 's', 'c', [['s-c', 'c-c']])] });
     const script = generateScript(p);
-    expect(script).toContain(`Customers_keep:\nNoConcatenate\n${type.replace('Keep', '').toUpperCase()} KEEP (Sales)\nLOAD\n    CustomerID,\n    [Customer Name],\n    Region\nRESIDENT Customers;\nDROP TABLE Customers;\nRENAME TABLE Customers_keep TO Customers;`);
+    expect(script).toContain(
+      `Customers_keep:\nNoConcatenate\n${type.replace('Keep', '').toUpperCase()} KEEP (Sales)\nLOAD\n    CustomerID,\n    [Customer Name],\n    Region\nRESIDENT Customers;\nDROP TABLE Customers;\nRENAME TABLE Customers_keep TO Customers;`,
+    );
     // Keep does not consume either table.
     expect(script).not.toContain('///$tab Cleanup');
   });
@@ -62,21 +69,64 @@ describe('links', () => {
   it('association with rename aliases the right field to the left name', () => {
     const sources = starSources();
     sources[1]!.fields[0]!.name = 'CustID';
-    const p = project({ sources, links: [link('l', 'association', 's', 'c', [['s-c', 'c-c']], { renameRightToLeft: true })] });
+    const p = project({
+      sources,
+      links: [link('l', 'association', 's', 'c', [['s-c', 'c-c']], { renameRightToLeft: true })],
+    });
     const script = generateScript(p);
     expect(script).toContain('CustID AS CustomerID');
     expect(script).not.toContain('JOIN');
   });
 
   it('composite keys: concat and AutoNumber on both sides of a join', () => {
-    const a = source('a', 'Budget', 'qvd', [field('a1', 'Year', { role: 'key' }), field('a2', 'Region', { role: 'key' }), field('a3', 'Budget', { role: 'measure', dataType: 'money' })]);
-    const b = source('b', 'Actuals', 'qvd', [field('b1', 'Year', { role: 'key' }), field('b2', 'Region', { role: 'key' }), field('b3', 'Actual', { role: 'measure', dataType: 'money' })]);
-    const concat = project({ sources: [a, b], links: [link('l', 'leftJoin', 'a', 'b', [['a1', 'b1'], ['a2', 'b2']], { compositeKey: { mode: 'concat', name: '%YearRegion', separator: '|' } })] });
-    const auto = project({ sources: [a, b], links: [link('l', 'association', 'a', 'b', [['a1', 'b1'], ['a2', 'b2']], { compositeKey: { mode: 'autoNumber', name: '%YearRegion', separator: '|' } })] });
+    const a = source('a', 'Budget', 'qvd', [
+      field('a1', 'Year', { role: 'key' }),
+      field('a2', 'Region', { role: 'key' }),
+      field('a3', 'Budget', { role: 'measure', dataType: 'money' }),
+    ]);
+    const b = source('b', 'Actuals', 'qvd', [
+      field('b1', 'Year', { role: 'key' }),
+      field('b2', 'Region', { role: 'key' }),
+      field('b3', 'Actual', { role: 'measure', dataType: 'money' }),
+    ]);
+    const concat = project({
+      sources: [a, b],
+      links: [
+        link(
+          'l',
+          'leftJoin',
+          'a',
+          'b',
+          [
+            ['a1', 'b1'],
+            ['a2', 'b2'],
+          ],
+          { compositeKey: { mode: 'concat', name: '%YearRegion', separator: '|' } },
+        ),
+      ],
+    });
+    const auto = project({
+      sources: [a, b],
+      links: [
+        link(
+          'l',
+          'association',
+          'a',
+          'b',
+          [
+            ['a1', 'b1'],
+            ['a2', 'b2'],
+          ],
+          { compositeKey: { mode: 'autoNumber', name: '%YearRegion', separator: '|' } },
+        ),
+      ],
+    });
     const s1 = generateScript(concat);
     expect(s1).toContain("Year & '|' & Region AS [%YearRegion]");
     expect(s1).toMatch(/Actuals:\nLOAD\n {4}Year,\n {4}Region,\n {4}Actual\n/);
-    expect(s1).toContain("LEFT JOIN (Budget)\nLOAD\n    Year & '|' & Region AS [%YearRegion],\n    Actual\nRESIDENT Actuals;");
+    expect(s1).toContain(
+      "LEFT JOIN (Budget)\nLOAD\n    Year & '|' & Region AS [%YearRegion],\n    Actual\nRESIDENT Actuals;",
+    );
     const s2 = generateScript(auto);
     expect(s2).toContain("AutoNumber(Year & '|' & Region, '%YearRegion') AS [%YearRegion]");
     // Right side of an association drops the original key fields.
@@ -86,13 +136,34 @@ describe('links', () => {
   });
 
   it('ApplyMap: mapping table after its source, mapped field in the left load, default value', () => {
-    const regions = source('r', 'Regions', 'inline', [field('r1', 'RegionCode', { role: 'key' }), field('r2', 'RegionName')], {
-      inline: { rows: [['RegionCode', 'RegionName'], ['TR', 'Türkiye']] },
-    });
+    const regions = source(
+      'r',
+      'Regions',
+      'inline',
+      [field('r1', 'RegionCode', { role: 'key' }), field('r2', 'RegionName')],
+      {
+        inline: {
+          rows: [
+            ['RegionCode', 'RegionName'],
+            ['TR', 'Türkiye'],
+          ],
+        },
+      },
+    );
     const sources = [...starSources(), regions];
     const p = project({
       sources,
-      links: [link('m', 'applyMap', 'c', 'r', [['c-r', 'r1']], { applyMap: { keyFieldId: 'r1', valueFieldId: 'r2', defaultValue: 'Unknown', mapName: 'Map_Region', outputName: 'Region Name' } })],
+      links: [
+        link('m', 'applyMap', 'c', 'r', [['c-r', 'r1']], {
+          applyMap: {
+            keyFieldId: 'r1',
+            valueFieldId: 'r2',
+            defaultValue: 'Unknown',
+            mapName: 'Map_Region',
+            outputName: 'Region Name',
+          },
+        }),
+      ],
     });
     const script = generateScript(p);
     expect(script.indexOf('Regions:')).toBeLessThan(script.indexOf('Map_Region:'));
@@ -103,14 +174,32 @@ describe('links', () => {
   });
 
   it('ApplyMap without default and as a calculated target column', () => {
-    const regions = source('r', 'Regions', 'qvd', [field('r1', 'RegionCode', { role: 'key' }), field('r2', 'RegionName')]);
+    const regions = source('r', 'Regions', 'qvd', [
+      field('r1', 'RegionCode', { role: 'key' }),
+      field('r2', 'RegionName'),
+    ]);
     const p = project({
       sources: [...starSources(), regions],
-      links: [link('m', 'applyMap', 't', 'r', [['x', 'r1']], { applyMap: { keyFieldId: 'r1', valueFieldId: 'r2', defaultValue: null, mapName: 'Map_Region', outputName: 'RegionName' } })],
+      links: [
+        link('m', 'applyMap', 't', 'r', [['x', 'r1']], {
+          applyMap: {
+            keyFieldId: 'r1',
+            valueFieldId: 'r2',
+            defaultValue: null,
+            mapName: 'Map_Region',
+            outputName: 'RegionName',
+          },
+        }),
+      ],
       targets: [
         target('t', 'Fact', 'c', [
           col('x', 'c', 'c-r'),
-          { id: 'y', kind: 'calculated', alias: 'Looked Up', expr: { kind: 'applyMap', linkId: 'm', key: { kind: 'field', ref: ref('c', 'c-r') } } },
+          {
+            id: 'y',
+            kind: 'calculated',
+            alias: 'Looked Up',
+            expr: { kind: 'applyMap', linkId: 'm', key: { kind: 'field', ref: ref('c', 'c-r') } },
+          },
         ]),
       ],
     });
@@ -124,7 +213,10 @@ describe('links', () => {
       sources: starSources(),
       targets: [
         target('t1', 'CustAgg', 'c', [col('a', 'c', 'c-c'), col('b', 'c', 'c-r')], { keepInModel: false }),
-        target('t2', 'Fact', 's', [col('c', 's', 's-o'), { id: 'd', kind: 'field', ref: ref('t1', 'b'), alias: null }]),
+        target('t2', 'Fact', 's', [
+          col('c', 's', 's-o'),
+          { id: 'd', kind: 'field', ref: ref('t1', 'b'), alias: null },
+        ]),
       ],
       links: [link('l', 'leftJoin', 's', 't1', [['s-c', 'a']])],
     });
@@ -157,13 +249,28 @@ describe('links', () => {
         link('l5', 'leftJoin', 's', 'c', [['s-c', 'zzz']]),
       ],
     });
-    expect(validateModel(p).map((e) => e.code).sort()).toEqual(['APPLYMAP_FIELDS_MISSING', 'FIELD_NOT_FOUND', 'LINK_NO_PAIRS', 'LINK_SELF', 'LINK_TABLE_MISSING'].sort());
+    expect(
+      validateModel(p)
+        .map((e) => e.code)
+        .sort(),
+    ).toEqual(
+      [
+        'APPLYMAP_FIELDS_MISSING',
+        'FIELD_NOT_FOUND',
+        'LINK_NO_PAIRS',
+        'LINK_SELF',
+        'LINK_TABLE_MISSING',
+      ].sort(),
+    );
   });
 
   it('detects cyclic dependencies between targets and links', () => {
     const p = project({
       sources: starSources(),
-      targets: [target('t1', 'A', 's', [col('a', 's', 's-o')]), target('t2', 'B', 't1', [{ id: 'b', kind: 'field', ref: ref('t1', 'a'), alias: null }])],
+      targets: [
+        target('t1', 'A', 's', [col('a', 's', 's-o')]),
+        target('t2', 'B', 't1', [{ id: 'b', kind: 'field', ref: ref('t1', 'a'), alias: null }]),
+      ],
       links: [link('l', 'leftJoin', 's', 't2', [['s-o', 'b']])],
     });
     expect(validateModel(p).map((e) => e.code)).toContain('CYCLIC_DEPENDENCY');

@@ -7,7 +7,15 @@ import { detectFromFile, isExcelFile, type DetectedTable } from '@/lib/fileField
 import { setFieldsFromDetection, updateSourceTable } from '@/store/sourceActions';
 import { cn } from '@/lib/cn';
 
-export function DetectFileDialog({ open, onClose, table }: { open: boolean; onClose: () => void; table: SourceTable }) {
+export function DetectFileDialog({
+  open,
+  onClose,
+  table,
+}: {
+  open: boolean;
+  onClose: () => void;
+  table: SourceTable;
+}) {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<DetectedTable | null>(null);
@@ -57,7 +65,11 @@ export function DetectFileDialog({ open, onClose, table }: { open: boolean; onCl
               {t('sources.appendFields')}
             </Button>
           ) : null}
-          <Button variant="primary" onClick={() => apply('replace')} disabled={!result || result.fields.length === 0}>
+          <Button
+            variant="primary"
+            onClick={() => apply('replace')}
+            disabled={!result || result.fields.length === 0}
+          >
             {table.fields.length > 0 ? t('sources.replaceFields') : t('common.apply')}
           </Button>
         </>
@@ -112,13 +124,18 @@ export function DetectFileDialog({ open, onClose, table }: { open: boolean; onCl
 
       {result && result.fields.length > 0 ? (
         <div className="mt-3">
-          <p className="mb-1 text-xs text-fg-subtle">{t('sources.detected', { count: result.fields.length })}</p>
+          <p className="mb-1 text-xs text-fg-subtle">
+            {t('sources.detected', { count: result.fields.length })}
+          </p>
           <div className="overflow-x-auto rounded-md border border-border">
             <table className="w-full text-xs">
               <thead>
                 <tr>
                   {result.fields.map((f) => (
-                    <th key={f} className="whitespace-nowrap bg-surface-sunken px-2 py-1 text-left font-medium">
+                    <th
+                      key={f}
+                      className="whitespace-nowrap bg-surface-sunken px-2 py-1 text-left font-medium"
+                    >
                       {f}
                     </th>
                   ))}

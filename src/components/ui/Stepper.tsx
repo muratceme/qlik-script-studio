@@ -21,13 +21,19 @@ export function Stepper({ steps, current, onSelect }: StepperProps) {
               aria-current={active ? 'step' : undefined}
               className={cn(
                 'flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors',
-                active ? 'border-accent bg-accent-soft/60' : 'border-border bg-surface-raised hover:bg-surface-sunken',
+                active
+                  ? 'border-accent bg-accent-soft/60'
+                  : 'border-border bg-surface-raised hover:bg-surface-sunken',
               )}
             >
               <span
                 className={cn(
                   'flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
-                  done ? 'bg-accent text-accent-fg' : active ? 'bg-accent text-accent-fg' : 'bg-surface-sunken text-fg-muted',
+                  done
+                    ? 'bg-accent text-accent-fg'
+                    : active
+                      ? 'bg-accent text-accent-fg'
+                      : 'bg-surface-sunken text-fg-muted',
                 )}
               >
                 {done ? <Check className="size-4" /> : i + 1}

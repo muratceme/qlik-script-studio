@@ -42,18 +42,29 @@ export function FilterBuilder({
     items[index] = item;
     onChange({ ...group, items });
   };
-  const removeItem = (index: number) => onChange({ ...group, items: group.items.filter((_, i) => i !== index) });
+  const removeItem = (index: number) =>
+    onChange({ ...group, items: group.items.filter((_, i) => i !== index) });
   const addCondition = () => {
     const first = fields[0];
     const left = first ? { kind: 'field' as const, ref: first.ref } : { kind: 'literal' as const, value: '' };
     onChange({ ...group, items: [...group.items, newCondition(left)] });
   };
-  const addGroup = () => onChange({ ...group, items: [...group.items, newConditionGroup(group.logic === 'and' ? 'or' : 'and')] });
+  const addGroup = () =>
+    onChange({ ...group, items: [...group.items, newConditionGroup(group.logic === 'and' ? 'or' : 'and')] });
 
   return (
-    <div className={cn('flex flex-col gap-2 rounded-lg border p-2', depth === 0 ? 'border-border' : 'border-dashed border-border-strong bg-surface-sunken/40')}>
+    <div
+      className={cn(
+        'flex flex-col gap-2 rounded-lg border p-2',
+        depth === 0 ? 'border-border' : 'border-dashed border-border-strong bg-surface-sunken/40',
+      )}
+    >
       <div className="flex items-center gap-2">
-        <div className="inline-flex overflow-hidden rounded-md border border-border text-xs" role="radiogroup" aria-label="Logic">
+        <div
+          className="inline-flex overflow-hidden rounded-md border border-border text-xs"
+          role="radiogroup"
+          aria-label="Logic"
+        >
           {(['and', 'or'] as const).map((logic) => (
             <button
               key={logic}
@@ -61,7 +72,12 @@ export function FilterBuilder({
               role="radio"
               aria-checked={group.logic === logic}
               onClick={() => onChange({ ...group, logic })}
-              className={cn('px-2.5 py-1 font-semibold', group.logic === logic ? 'bg-accent text-accent-fg' : 'bg-surface text-fg-muted hover:bg-surface-raised')}
+              className={cn(
+                'px-2.5 py-1 font-semibold',
+                group.logic === logic
+                  ? 'bg-accent text-accent-fg'
+                  : 'bg-surface text-fg-muted hover:bg-surface-raised',
+              )}
             >
               {t(`common.${logic}`)}
             </button>
@@ -81,10 +97,21 @@ export function FilterBuilder({
 
       {group.items.map((item, index) => (
         <div key={item.id} className="flex items-start gap-1.5">
-          {index > 0 ? <span className="mt-2 w-10 shrink-0 text-right text-[11px] font-semibold text-fg-subtle">{t(`common.${group.logic}`)}</span> : <span className="w-10 shrink-0" />}
+          {index > 0 ? (
+            <span className="mt-2 w-10 shrink-0 text-right text-[11px] font-semibold text-fg-subtle">
+              {t(`common.${group.logic}`)}
+            </span>
+          ) : (
+            <span className="w-10 shrink-0" />
+          )}
           <div className="min-w-0 flex-1">
             {item.kind === 'group' ? (
-              <FilterBuilder group={item} onChange={(g) => setItem(index, g)} fields={fields} depth={depth + 1} />
+              <FilterBuilder
+                group={item}
+                onChange={(g) => setItem(index, g)}
+                fields={fields}
+                depth={depth + 1}
+              />
             ) : (
               <ConditionRow condition={item} onChange={(c) => setItem(index, c)} fields={fields} />
             )}
@@ -98,7 +125,15 @@ export function FilterBuilder({
   );
 }
 
-function ConditionRow({ condition, onChange, fields }: { condition: Condition; onChange: (c: Condition) => void; fields: ReachableField[] }) {
+function ConditionRow({
+  condition,
+  onChange,
+  fields,
+}: {
+  condition: Condition;
+  onChange: (c: Condition) => void;
+  fields: ReachableField[];
+}) {
   const { t } = useTranslation();
   const count = valueCount(condition.op);
   const values = condition.values;
@@ -111,7 +146,12 @@ function ConditionRow({ condition, onChange, fields }: { condition: Condition; o
 
   return (
     <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
-      <OperandPicker label={t('common.field')} value={condition.left} onChange={(left) => onChange({ ...condition, left })} fields={fields} />
+      <OperandPicker
+        label={t('common.field')}
+        value={condition.left}
+        onChange={(left) => onChange({ ...condition, left })}
+        fields={fields}
+      />
       <div className="flex flex-col gap-1">
         <span className="text-xs font-medium text-fg-muted">{t('formula.operator')}</span>
         <Select
@@ -121,14 +161,25 @@ function ConditionRow({ condition, onChange, fields }: { condition: Condition; o
           onChange={(e) => {
             const op = e.target.value as ConditionOp;
             const n = valueCount(op);
-            const next = n === 0 ? [] : n === 2 ? [values[0] ?? '', values[1] ?? ''] : n === 1 ? [values[0] ?? ''] : values.length ? values : [''];
+            const next =
+              n === 0
+                ? []
+                : n === 2
+                  ? [values[0] ?? '', values[1] ?? '']
+                  : n === 1
+                    ? [values[0] ?? '']
+                    : values.length
+                      ? values
+                      : [''];
             onChange({ ...condition, op, values: next });
           }}
           options={CONDITION_OPS.map((op) => ({ value: op, label: t(`ops.${op}`) }))}
         />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-fg-muted">{count === -1 ? t('common.values') : t('common.value')}</span>
+        <span className="text-xs font-medium text-fg-muted">
+          {count === -1 ? t('common.values') : t('common.value')}
+        </span>
         {count === 0 ? (
           <span className="text-xs text-fg-subtle">—</span>
         ) : count === -1 ? (
@@ -137,12 +188,20 @@ function ConditionRow({ condition, onChange, fields }: { condition: Condition; o
             className="!h-8"
             placeholder="a, b, c"
             value={values.join(', ')}
-            onChange={(e) => onChange({ ...condition, values: e.target.value.split(',').map((v) => parseValue(v.trim())) })}
+            onChange={(e) =>
+              onChange({ ...condition, values: e.target.value.split(',').map((v) => parseValue(v.trim())) })
+            }
           />
         ) : (
           <div className="flex gap-1">
             {Array.from({ length: count }).map((_, i) => (
-              <TextInput key={i} aria-label={`${t('common.value')} ${i + 1}`} className="!h-8" value={String(values[i] ?? '')} onChange={(e) => setValue(i, e.target.value)} />
+              <TextInput
+                key={i}
+                aria-label={`${t('common.value')} ${i + 1}`}
+                className="!h-8"
+                value={String(values[i] ?? '')}
+                onChange={(e) => setValue(i, e.target.value)}
+              />
             ))}
           </div>
         )}

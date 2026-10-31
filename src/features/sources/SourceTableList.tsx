@@ -7,7 +7,13 @@ import { addSourceTable, duplicateSourceTable, removeSourceTable } from '@/store
 import { cn } from '@/lib/cn';
 import { SourceKindIcon } from './SourceKindIcon';
 
-export function SourceTableList({ sources, selectedId }: { sources: SourceTable[]; selectedId: string | null }) {
+export function SourceTableList({
+  sources,
+  selectedId,
+}: {
+  sources: SourceTable[];
+  selectedId: string | null;
+}) {
   const { t } = useTranslation();
   const select = useUiStore((s) => s.selectSource);
   return (
@@ -32,7 +38,9 @@ export function SourceTableList({ sources, selectedId }: { sources: SourceTable[
               }}
               className={cn(
                 'group flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1.5 text-sm',
-                table.id === selectedId ? 'border-accent bg-accent-soft/50' : 'border-border bg-surface-raised hover:bg-surface-sunken',
+                table.id === selectedId
+                  ? 'border-accent bg-accent-soft/50'
+                  : 'border-border bg-surface-raised hover:bg-surface-sunken',
               )}
             >
               <SourceKindIcon kind={table.kind} className="size-4 shrink-0 text-fg-muted" />
@@ -55,7 +63,8 @@ export function SourceTableList({ sources, selectedId }: { sources: SourceTable[
                   variant="danger"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (window.confirm(t('common.confirmDelete', { name: table.name }))) removeSourceTable(table.id);
+                    if (window.confirm(t('common.confirmDelete', { name: table.name })))
+                      removeSourceTable(table.id);
                   }}
                 >
                   <Trash2 className="size-3.5" />

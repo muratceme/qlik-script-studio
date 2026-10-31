@@ -6,9 +6,34 @@ import type { DataType, Field, FieldRole } from '@/model/types';
 const KEY_PATTERNS = [/(^|[_\s])id$/i, /id$/i, /key$/i, /(^|[_\s])(code|kod|no)$/i, /^id[_\s]/i];
 const DATE_PATTERNS = [/date/i, /tarih/i, /^dt[_\s]/i, /[_\s]dt$/i, /time$/i, /zaman/i, /_at$/i];
 const MEASURE_PATTERNS = [
-  /amount/i, /tutar/i, /qty/i, /quantity/i, /adet/i, /miktar/i, /total/i, /toplam/i, /price/i, /fiyat/i,
-  /cost/i, /maliyet/i, /revenue/i, /sales/i, /satis/i, /satış/i, /sum/i, /count/i, /value/i, /deger/i, /değer/i,
-  /weight/i, /discount/i, /indirim/i, /rate/i, /oran/i, /balance/i, /bakiye/i,
+  /amount/i,
+  /tutar/i,
+  /qty/i,
+  /quantity/i,
+  /adet/i,
+  /miktar/i,
+  /total/i,
+  /toplam/i,
+  /price/i,
+  /fiyat/i,
+  /cost/i,
+  /maliyet/i,
+  /revenue/i,
+  /sales/i,
+  /satis/i,
+  /satış/i,
+  /sum/i,
+  /count/i,
+  /value/i,
+  /deger/i,
+  /değer/i,
+  /weight/i,
+  /discount/i,
+  /indirim/i,
+  /rate/i,
+  /oran/i,
+  /balance/i,
+  /bakiye/i,
 ];
 
 function matches(name: string, patterns: RegExp[]): boolean {
@@ -21,7 +46,9 @@ export function inferDataType(values: string[]): DataType {
   if (samples.length === 0) return 'text';
   const isNumber = (v: string) => /^-?\d{1,3}([.,]\d{3})*([.,]\d+)?$|^-?\d+([.,]\d+)?$/.test(v);
   const isDate = (v: string) =>
-    /^\d{4}-\d{2}-\d{2}(T.*)?$/.test(v) || /^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}$/.test(v) || /^\d{4}[./]\d{2}[./]\d{2}$/.test(v);
+    /^\d{4}-\d{2}-\d{2}(T.*)?$/.test(v) ||
+    /^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}$/.test(v) ||
+    /^\d{4}[./]\d{2}[./]\d{2}$/.test(v);
   if (samples.every(isDate)) return 'date';
   if (samples.every(isNumber)) {
     return samples.some((v) => /[.,]\d{2}$/.test(v)) ? 'money' : 'number';
@@ -56,7 +83,11 @@ export function suggestRole(field: Pick<Field, 'name' | 'role' | 'dataType'>): F
   let suggestion: FieldRole | null = null;
   if (matches(field.name, KEY_PATTERNS)) suggestion = 'key';
   else if (matches(field.name, DATE_PATTERNS) || field.dataType === 'date') suggestion = 'date';
-  else if ((field.dataType === 'number' || field.dataType === 'money') && matches(field.name, MEASURE_PATTERNS)) suggestion = 'measure';
+  else if (
+    (field.dataType === 'number' || field.dataType === 'money') &&
+    matches(field.name, MEASURE_PATTERNS)
+  )
+    suggestion = 'measure';
   else if (field.dataType === 'money') suggestion = 'measure';
   if (suggestion === null || suggestion === field.role) return null;
   return suggestion;

@@ -48,7 +48,8 @@ export function autoPosition(project: Project, tableId: string): { x: number; y:
   const sIndex = sources.findIndex((s) => s.id === tableId);
   if (sIndex >= 0) {
     let y = 40;
-    for (let i = 0; i < sIndex; i++) y += nodeHeight(sources[i]!.fields.filter((f) => f.role !== 'ignore').length) + NODE_GAP_Y;
+    for (let i = 0; i < sIndex; i++)
+      y += nodeHeight(sources[i]!.fields.filter((f) => f.role !== 'ignore').length) + NODE_GAP_Y;
     return { x: 40, y };
   }
   const tIndex = targets.findIndex((t) => t.id === tableId);
@@ -73,11 +74,18 @@ export function buildNodes(project: Project, diagnostics: Diagnostic[]): TableNo
   const nodes: TableNode[] = [];
   for (const table of [...project.sources, ...project.targets]) {
     const fields = isSourceTable(table)
-      ? table.fields.filter((f) => f.role !== 'ignore').map((f) => ({ id: f.id, name: ctx.outName({ tableId: table.id, fieldId: f.id }), role: f.role }))
+      ? table.fields
+          .filter((f) => f.role !== 'ignore')
+          .map((f) => ({ id: f.id, name: ctx.outName({ tableId: table.id, fieldId: f.id }), role: f.role }))
       : table.columns.map((c) => ({
           id: c.id,
           name: ctx.columnName(c),
-          role: c.kind === 'measure' ? 'measure' : c.kind === 'calculated' ? 'dimension' : (ctx.field(c.ref)?.role ?? 'dimension'),
+          role:
+            c.kind === 'measure'
+              ? 'measure'
+              : c.kind === 'calculated'
+                ? 'dimension'
+                : (ctx.field(c.ref)?.role ?? 'dimension'),
         }));
     nodes.push({
       id: table.id,
@@ -122,7 +130,10 @@ export function buildEdges(project: Project, diagnostics: Diagnostic[]): LinkEdg
 
   for (const link of project.links) {
     const first = link.pairs[0];
-    const applyMapPair = link.type === 'applyMap' && link.applyMap ? { leftFieldId: first?.leftFieldId ?? '', rightFieldId: link.applyMap.keyFieldId } : null;
+    const applyMapPair =
+      link.type === 'applyMap' && link.applyMap
+        ? { leftFieldId: first?.leftFieldId ?? '', rightFieldId: link.applyMap.keyFieldId }
+        : null;
     const pair = applyMapPair ?? first;
     covered.add([link.leftTableId, link.rightTableId].sort().join('|'));
     edges.push({
@@ -168,7 +179,9 @@ export function buildEdges(project: Project, diagnostics: Diagnostic[]): LinkEdg
 function fieldIdByName(project: Project, tableId: string, name: string): string | undefined {
   const ctx = buildContext(project);
   const source = project.sources.find((s) => s.id === tableId);
-  if (source) return source.fields.find((f) => f.role !== 'ignore' && ctx.outName({ tableId, fieldId: f.id }) === name)?.id;
+  if (source)
+    return source.fields.find((f) => f.role !== 'ignore' && ctx.outName({ tableId, fieldId: f.id }) === name)
+      ?.id;
   const target = project.targets.find((t) => t.id === tableId);
   return target?.columns.find((c) => ctx.columnName(c) === name)?.id;
 }

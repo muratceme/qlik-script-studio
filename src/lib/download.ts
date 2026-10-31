@@ -21,6 +21,10 @@ export async function copyText(text: string): Promise<boolean> {
 
 /** Turns a project name into a safe file name. */
 export function safeFileName(name: string, ext: string): string {
-  const base = name.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_').replace(/^_+|_+$/g, '') || 'project';
+  const base =
+    name
+      .trim()
+      .replace(/[^\p{L}\p{N}_-]+/gu, '_')
+      .replace(/^_+|_+$/g, '') || 'project';
   return `${base}.${ext}`;
 }

@@ -43,7 +43,8 @@ export function orderSources(ctx: Context): OrderResult<SourceTable> {
   );
 }
 
-export type TransformNode = { id: string; kind: 'target'; target: TargetTable } | { id: string; kind: 'link'; link: Link };
+export type TransformNode =
+  { id: string; kind: 'target'; target: TargetTable } | { id: string; kind: 'link'; link: Link };
 
 /** Links that produce a statement in the Transform section. */
 export function isTransformLink(link: Link): boolean {
@@ -53,7 +54,9 @@ export function isTransformLink(link: Link): boolean {
 export function orderTransform(ctx: Context): OrderResult<TransformNode> {
   const nodes: TransformNode[] = [
     ...ctx.project.targets.map((t): TransformNode => ({ id: `T:${t.id}`, kind: 'target', target: t })),
-    ...ctx.project.links.filter(isTransformLink).map((l): TransformNode => ({ id: `L:${l.id}`, kind: 'link', link: l })),
+    ...ctx.project.links
+      .filter(isTransformLink)
+      .map((l): TransformNode => ({ id: `L:${l.id}`, kind: 'link', link: l })),
   ];
   return topoSort(nodes, (node) => {
     if (node.kind === 'link') {

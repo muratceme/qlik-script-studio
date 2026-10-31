@@ -30,10 +30,21 @@ export function TabModelBuilder() {
         <div className="flex items-center justify-between border-t border-border px-4 py-2">
           <span className="text-xs text-fg-subtle">{t('steps.stepOf', { current: step, total: 3 })}</span>
           <div className="flex gap-2">
-            <Button size="sm" icon={<ArrowLeft />} disabled={step === 1} onClick={() => setStep((step - 1) as WizardStep)}>
+            <Button
+              size="sm"
+              icon={<ArrowLeft />}
+              disabled={step === 1}
+              onClick={() => setStep((step - 1) as WizardStep)}
+            >
               {t('steps.back')}
             </Button>
-            <Button size="sm" variant="primary" icon={<ArrowRight />} disabled={step === 3} onClick={() => setStep((step + 1) as WizardStep)}>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={<ArrowRight />}
+              disabled={step === 3}
+              onClick={() => setStep((step + 1) as WizardStep)}
+            >
               {t('steps.next')}
             </Button>
           </div>
