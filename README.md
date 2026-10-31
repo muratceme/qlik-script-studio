@@ -1,4 +1,4 @@
-# Qlik Script Studio
+# Script Studio for Qlik
 
 **Build Qlik Sense / QlikView load scripts visually, without writing code.**
 Describe your source tables, say what each field is, shape the tables you want,

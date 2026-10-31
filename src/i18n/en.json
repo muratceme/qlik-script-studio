@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Qlik Script Studio",
+    "title": "Script Studio for Qlik",
     "tagline": "Build Qlik load scripts without writing code",
     "projectName": "Project name",
     "untitled": "New project",
@@ -17,7 +17,7 @@
     "loadSampleConfirm": "Replace the current project with the sample project?",
     "importJson": "Import JSON",
     "exportJson": "Export JSON",
-    "importFailed": "The file is not a valid Qlik Script Studio project.",
+    "importFailed": "The file is not a valid Script Studio for Qlik project.",
     "importIssues": "Problems found:",
     "settings": "Settings",
     "github": "Source on GitHub",

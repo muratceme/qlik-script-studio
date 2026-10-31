@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Qlik Script Studio",
+    "title": "Script Studio for Qlik",
     "tagline": "Kod yazmadan Qlik load script oluşturun",
     "projectName": "Proje adı",
     "untitled": "Yeni proje",
@@ -17,7 +17,7 @@
     "loadSampleConfirm": "Mevcut proje örnek projeyle değiştirilsin mi?",
     "importJson": "JSON içe aktar",
     "exportJson": "JSON dışa aktar",
-    "importFailed": "Dosya geçerli bir Qlik Script Studio projesi değil.",
+    "importFailed": "Dosya geçerli bir Script Studio for Qlik projesi değil.",
     "importIssues": "Bulunan sorunlar:",
     "settings": "Ayarlar",
     "github": "GitHub'da kaynak kod",
