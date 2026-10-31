@@ -67,14 +67,16 @@ export interface ExtraColumn {
 }
 
 /**
- * Field ids on the right side of composite-key links that must be left out of
- * the table's own LOAD (they are replaced by the composite key).
+ * Field ids on the right side of composite-key *associations* that must be
+ * left out of the table's own LOAD: the composite key replaces them, otherwise
+ * the original fields would still associate (and form a synthetic key).
+ * For joins and keeps the right table keeps its fields; the merge statement
+ * builds the composite key from them.
  */
 export function suppressedFieldIds(ctx: Context, tableId: string): Set<string> {
   const ids = new Set<string>();
   for (const link of ctx.project.links) {
-    if (link.rightTableId !== tableId || !hasCompositeKey(link)) continue;
-    if (link.type === 'applyMap' || link.type === 'noConcatenate' || link.type === 'concatenate') continue;
+    if (link.rightTableId !== tableId || !hasCompositeKey(link) || link.type !== 'association') continue;
     for (const p of link.pairs) ids.add(p.rightFieldId);
   }
   return ids;
