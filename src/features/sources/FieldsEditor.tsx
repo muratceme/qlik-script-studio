@@ -14,6 +14,15 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
   const [paste, setPaste] = useState(false);
   const [detect, setDetect] = useState(false);
 
+  const nameCounts = new Map<string, number>();
+  for (const f of table.fields) {
+    if (f.role === 'ignore') continue;
+    const key = (f.alias ?? f.name).trim().toLowerCase();
+    if (key) nameCounts.set(key, (nameCounts.get(key) ?? 0) + 1);
+  }
+  const isDuplicate = (f: SourceTable['fields'][number]) =>
+    f.role !== 'ignore' && (nameCounts.get((f.alias ?? f.name).trim().toLowerCase()) ?? 0) > 1;
+
   const onAdd = () => {
     const id = addField(table.id, '');
     requestAnimationFrame(() => document.getElementById(`field-name-${id}`)?.focus());
@@ -65,8 +74,10 @@ export function FieldsEditor({ table }: { table: SourceTable }) {
                     <TextInput
                       id={`field-name-${field.id}`}
                       aria-label={t('sources.fieldName')}
-                      className="!h-8"
+                      aria-invalid={isDuplicate(field) || undefined}
+                      className={isDuplicate(field) ? '!h-8 !border-danger' : '!h-8'}
                       value={field.name}
+                      title={isDuplicate(field) ? t('sources.duplicateField') : undefined}
                       onChange={(e) => updateField(table.id, field.id, (f) => void (f.name = e.target.value))}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {

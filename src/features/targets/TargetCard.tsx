@@ -12,19 +12,28 @@ import { TargetPreview } from './TargetPreview';
 import { useReachableFields } from './useReachableFields';
 import { newConditionGroup } from '@/model/defaults';
 import { cn } from '@/lib/cn';
+import { useScript } from '@/features/script/useScript';
+import { DiagnosticList } from '@/features/script/DiagnosticList';
 
 export function TargetCard({
   project,
   target,
   selected,
   onSelect,
+  onConnect,
 }: {
   project: Project;
   target: TargetTable;
   selected: boolean;
   onSelect: () => void;
+  onConnect: (rightTableId: string) => void;
 }) {
   const { t } = useTranslation();
+  const { errors } = useScript();
+  const targetErrors = errors.filter((d) => d.refs.tableIds?.[0] === target.id);
+  const columnIssues = (columnId: string) => targetErrors.filter((d) => d.refs.fieldIds?.includes(columnId));
+  const tableLevel = targetErrors.filter((d) => !d.refs.fieldIds || d.refs.fieldIds.length === 0);
+  const advancedOpen = target.distinct || !target.keepInModel || target.store.enabled;
   const { setNodeRef, isOver } = useDroppable({ id: `target|${target.id}`, data: { targetId: target.id } });
   const fields = useReachableFields(target);
   const [formula, setFormula] = useState<{ open: boolean; columnId: string | null }>({
@@ -63,6 +72,8 @@ export function TargetCard({
           <Table2 className="size-4 text-accent" />
           <span className="truncate text-sm font-semibold">{target.name}</span>
           <Badge>{target.columns.length}</Badge>
+          {targetErrors.length > 0 ? <Badge tone="danger">{targetErrors.length}</Badge> : null}
+          {targetErrors.length > 0 ? <Badge tone="danger">{targetErrors.length}</Badge> : null}
           {measureCount > 0 ? (
             <Badge tone="accent">
               <Sigma className="mr-1 size-3" />
@@ -148,6 +159,8 @@ export function TargetCard({
                     target={target}
                     column={column}
                     index={index}
+                    issues={columnIssues(column.id)}
+                    onConnect={onConnect}
                     onEdit={(columnId) => setFormula({ open: true, columnId })}
                   />
                 ))}
@@ -184,37 +197,44 @@ export function TargetCard({
             </div>
           ) : null}
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Checkbox
-              label={t('design.distinct')}
-              checked={target.distinct}
-              onChange={(e) => updateTarget(target.id, (tg) => void (tg.distinct = e.target.checked))}
-            />
-            <Checkbox
-              label={t('design.keepInModel')}
-              hint={t('design.keepInModelHint')}
-              checked={target.keepInModel}
-              onChange={(e) => updateTarget(target.id, (tg) => void (tg.keepInModel = e.target.checked))}
-            />
-            <Checkbox
-              label={t('design.store')}
-              checked={target.store.enabled}
-              onChange={(e) => updateTarget(target.id, (tg) => void (tg.store.enabled = e.target.checked))}
-            />
-            {target.store.enabled ? (
-              <Labeled label={t('design.storePath')} hint={t('design.storePathHint')}>
-                {(id) => (
-                  <TextInput
-                    id={id}
-                    className="!h-8"
-                    placeholder={`${project.settings.qvdStorePath}${target.name}.qvd`}
-                    value={target.store.path}
-                    onChange={(e) => updateTarget(target.id, (tg) => void (tg.store.path = e.target.value))}
-                  />
-                )}
-              </Labeled>
-            ) : null}
-          </div>
+          {tableLevel.length > 0 ? <DiagnosticList items={tableLevel} compact /> : null}
+
+          <details open={advancedOpen} className="rounded-lg border border-border">
+            <summary className="cursor-pointer px-3 py-2 text-xs font-semibold uppercase tracking-wide text-fg-muted">
+              {t('design.moreOptions')}
+            </summary>
+            <div className="grid grid-cols-1 gap-3 px-3 pb-3 sm:grid-cols-2">
+              <Checkbox
+                label={t('design.distinct')}
+                checked={target.distinct}
+                onChange={(e) => updateTarget(target.id, (tg) => void (tg.distinct = e.target.checked))}
+              />
+              <Checkbox
+                label={t('design.keepInModel')}
+                hint={t('design.keepInModelHint')}
+                checked={target.keepInModel}
+                onChange={(e) => updateTarget(target.id, (tg) => void (tg.keepInModel = e.target.checked))}
+              />
+              <Checkbox
+                label={t('design.store')}
+                checked={target.store.enabled}
+                onChange={(e) => updateTarget(target.id, (tg) => void (tg.store.enabled = e.target.checked))}
+              />
+              {target.store.enabled ? (
+                <Labeled label={t('design.storePath')} hint={t('design.storePathHint')}>
+                  {(id) => (
+                    <TextInput
+                      id={id}
+                      className="!h-8"
+                      placeholder={`${project.settings.qvdStorePath}${target.name}.qvd`}
+                      value={target.store.path}
+                      onChange={(e) => updateTarget(target.id, (tg) => void (tg.store.path = e.target.value))}
+                    />
+                  )}
+                </Labeled>
+              ) : null}
+            </div>
+          </details>
 
           <TargetPreview project={project} target={target} />
           <FormulaDialog

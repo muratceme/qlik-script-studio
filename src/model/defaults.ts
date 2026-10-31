@@ -59,7 +59,7 @@ export function newSourceTable(name: string, kind: SourceKind = 'qvd'): SourceTa
     sql: null,
     inline: null,
     fields: [],
-    keepInModel: true,
+    keepInModel: false,
     qualify: false,
     sampleRows: null,
   };

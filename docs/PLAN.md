@@ -1,4 +1,4 @@
-# Qlik Script Studio – Implementation Plan
+# Script Studio for Qlik – Implementation Plan
 
 > Status: all four phases are implemented. This document is kept as the design
 > reference; where the implementation deviates from the original plan the text

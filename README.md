@@ -1,4 +1,4 @@
-# Qlik Script Studio
+# Script Studio for Qlik
 
 **Build Qlik Sense / QlikView load scripts visually, without writing code.**
 Describe your source tables, say what each field is, shape the tables you want,
@@ -29,6 +29,16 @@ model always gives the same script.
   fields with a form (combine text, arithmetic, percentage, If / then / else,
   date parts, ApplyMap, AutoNumber, or a raw expression), add a master calendar
   with one click, `STORE` any target as QVD, and preview how each table will look.
+
+**Connecting tables**
+
+- Drop a field from another table into a target and the app asks, in plain
+  language, how the two tables should be connected: add its columns (join),
+  keep both and link them (association), or append its rows (concatenate).
+  Matching fields are guessed from names and keys; one more click opens every
+  other relationship type.
+- Problems are shown next to the column they belong to, with a "Connect…"
+  button, instead of only in the script panel.
 
 **Relations & joins**
 
@@ -156,9 +166,17 @@ the app) and write the script with the same rules.
 ## Deployment
 
 Every push runs lint, typecheck, tests and build in GitHub Actions. Pushes to
-`main` also deploy `dist/` to GitHub Pages (the Vite `base` is derived from the
-repository name). GitHub Pages must be set to **Source: GitHub Actions** once in
-the repository settings; the workflow tries to enable it automatically.
+`main` also build `dist/` and publish it to the `gh-pages` branch, which GitHub
+Pages serves (the Vite `base` is derived from the repository name). If the site
+does not appear, open Settings → Pages and set **Source: Deploy from a branch**,
+branch `gh-pages`, folder `/ (root)`.
+
+## Trademarks
+
+This is an independent open-source project. It is not affiliated with,
+endorsed by, or supported by QlikTech International AB. Qlik, Qlik Sense and
+QlikView are trademarks of QlikTech International AB and are used here only to
+describe what the tool produces.
 
 ## License
 

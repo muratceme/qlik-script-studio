@@ -14,7 +14,7 @@ export function TabModelBuilder() {
 
   const steps = [
     { label: t('steps.sources'), hint: t('steps.sourcesHint') },
-    { label: t('steps.roles'), hint: t('steps.rolesHint') },
+    { label: `${t('steps.roles')} (${t('steps.optional')})`, hint: t('steps.rolesHint') },
     { label: t('steps.design'), hint: t('steps.designHint') },
   ];
 
