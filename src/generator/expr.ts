@@ -51,7 +51,7 @@ export function renderExpr(expr: Expr, scope: ExprScope): string {
     case 'percent':
       return `${renderExpr(expr.part, scope)} / ${renderExpr(expr.whole, scope)} * 100`;
     case 'if': {
-      const cond = renderGroup(expr.condition, scope, true) || '1=1';
+      const cond = renderGroup(expr.condition, scope, true) || '1 = 1';
       const then = renderExpr(expr.then, scope);
       return expr.else ? `If(${cond}, ${then}, ${renderExpr(expr.else, scope)})` : `If(${cond}, ${then})`;
     }

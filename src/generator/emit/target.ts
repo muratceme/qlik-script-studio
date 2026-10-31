@@ -82,14 +82,14 @@ export function emitTarget(ctx: Context, w: ScriptWriter, target: TargetTable): 
   w.line('NoConcatenate');
   w.line(target.distinct ? 'LOAD DISTINCT' : 'LOAD');
   w.lines(formatColumns(columns));
-  w.line(`RESIDENT ${qTable(primaryName)}`);
   const where = target.filter ? renderGroup(target.filter, scope, true) : '';
   const tail: string[] = [];
   if (where) tail.push(`WHERE ${where}`);
   if (hasMeasure && groupBy.length > 0) tail.push(`GROUP BY ${groupBy.join(', ')}`);
   if (tail.length === 0) {
-    w.line(';');
+    w.line(`RESIDENT ${qTable(primaryName)};`);
   } else {
+    w.line(`RESIDENT ${qTable(primaryName)}`);
     w.lines(tail.map((t, i) => (i === tail.length - 1 ? `${t};` : t)));
   }
   if (target.qualify) w.line('UNQUALIFY *;');

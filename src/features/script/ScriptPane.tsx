@@ -51,7 +51,7 @@ export function ScriptPane() {
         <label className="flex items-center gap-1.5">
           <span className="text-fg-muted">{t('script.locale')}</span>
           <Select
-            className="!h-7 w-auto !text-xs"
+            className="!h-7 !w-auto !text-xs"
             value={project.settings.locale}
             onChange={(e) => update((p) => void (p.settings.locale = e.target.value as 'en' | 'tr'))}
             options={[
@@ -63,7 +63,7 @@ export function ScriptPane() {
         <label className="flex items-center gap-1.5">
           <span className="text-fg-muted">{t('script.dialect')}</span>
           <Select
-            className="!h-7 w-auto !text-xs"
+            className="!h-7 !w-auto !text-xs"
             value={project.settings.dialect}
             onChange={(e) => update((p) => void (p.settings.dialect = e.target.value as 'sense' | 'view'))}
             options={[
