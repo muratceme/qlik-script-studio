@@ -32,11 +32,12 @@
     "roles": "Alan rolleri",
     "design": "Hedef tasarım",
     "sourcesHint": "Verinin nereden geldiğini belirtin",
-    "rolesHint": "Her alanın ne olduğunu söyleyin",
+    "rolesHint": "Rolleri gözden geçirin, öneri alın",
     "designHint": "İstediğiniz tabloları şekillendirin",
     "next": "İleri",
     "back": "Geri",
-    "stepOf": "Adım {{current}} / {{total}}"
+    "stepOf": "Adım {{current}} / {{total}}",
+    "optional": "isteğe bağlı"
   },
   "common": {
     "add": "Ekle",
@@ -226,7 +227,12 @@
     "sampleRows": "Örnek satırlar",
     "tableCount": "{{count}} tablo",
     "fieldCount": "{{count}} alan",
-    "duplicateTable": "Tabloyu çoğalt"
+    "duplicateTable": "Tabloyu çoğalt",
+    "duplicateField": "Bu tabloda aynı adda başka bir alan var.",
+    "howItWorks": "Nasıl çalışır",
+    "how1": "Kaynak tablolarınızı ve alanlarını ekleyin.",
+    "how2": "Hangi alanların anahtar, ölçü ve tarih olduğunu işaretleyin (isteğe bağlı).",
+    "how3": "Son tabloları şekillendirin, bağlayın ve scripti Qlik'e kopyalayın."
   },
   "rolesStep": {
     "title": "Alan rolleri",
@@ -289,7 +295,10 @@
     "addToTarget": "Hedefe ekle",
     "fieldFromOtherTable": "Başka tablodan",
     "removeColumn": "Sütunu kaldır",
-    "renameColumn": "Sütunu yeniden adlandır"
+    "renameColumn": "Sütunu yeniden adlandır",
+    "duplicateName": "Bu ad bu tabloda zaten kullanılıyor.",
+    "moreOptions": "Daha fazla seçenek",
+    "notConnected": "{{table}} henüz {{primary}} tablosuna bağlı değil."
   },
   "formula": {
     "title": "Hesaplanan alan",
@@ -421,5 +430,27 @@
     "alias": "alias",
     "column": "sütun",
     "composite key": "birleşik anahtar"
+  },
+  "connect": {
+    "title": "Tabloları bağla",
+    "button": "Tabloları bağla",
+    "rowsFrom": "Satırlar şu tablodan gelir",
+    "other": "Bağlanacak tablo",
+    "how": "{{right}} tablosu {{left}} tablosuna nasıl bağlansın?",
+    "join": "Sütunlarını {{left}} tablosuna ekle",
+    "joinHint": "Tek ve daha geniş bir tablo (join). {{left}} tablosunun tüm satırları kalır; {{right}} tablosunun eşleşen satırları yeni sütunları doldurur.",
+    "association": "İki tabloyu da tut, ilişkilendir",
+    "associationHint": "Qlik tabloları ortak alan üzerinden bağlar (association). Alanlar kendi tablolarında kalır.",
+    "concatenate": "Satırlarını {{left}} tablosunun altına ekle",
+    "concatenateHint": "İki kaynaktan aynı türde veri, örn. 2023 ve 2024 (concatenate).",
+    "matchOn": "Satırları şu alanlarla eşleştir",
+    "addPair": "Başka bir alan çifti ekle",
+    "advanced": "Diğer ilişki tipleri…",
+    "swap": "Tabloları değiştir",
+    "linked": "{{right}} artık {{left}} tablosuna bağlı.",
+    "keptSeparate": "{{right}} ayrı bir tablo olarak kalır; alanları {{target}} tablosuna eklenmez.",
+    "fixConnect": "{{table}} tablosunu bağla…",
+    "noOtherTables": "Önce ikinci bir tablo ekleyin.",
+    "sameName": "İki tablo da bu alan için \"{{name}}\" adını kullanacak."
   }
 }

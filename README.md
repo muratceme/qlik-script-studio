@@ -30,6 +30,16 @@ model always gives the same script.
   date parts, ApplyMap, AutoNumber, or a raw expression), add a master calendar
   with one click, `STORE` any target as QVD, and preview how each table will look.
 
+**Connecting tables**
+
+- Drop a field from another table into a target and the app asks, in plain
+  language, how the two tables should be connected: add its columns (join),
+  keep both and link them (association), or append its rows (concatenate).
+  Matching fields are guessed from names and keys; one more click opens every
+  other relationship type.
+- Problems are shown next to the column they belong to, with a "Connect…"
+  button, instead of only in the script panel.
+
 **Relations & joins**
 
 - Tables on a canvas with their fields; drag from one field to another to link.

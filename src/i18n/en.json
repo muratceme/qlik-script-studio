@@ -32,11 +32,12 @@
     "roles": "Field roles",
     "design": "Target design",
     "sourcesHint": "Tell us where the data comes from",
-    "rolesHint": "Say what each field is",
+    "rolesHint": "Review roles, get suggestions",
     "designHint": "Shape the tables you want",
     "next": "Next",
     "back": "Back",
-    "stepOf": "Step {{current}} of {{total}}"
+    "stepOf": "Step {{current}} of {{total}}",
+    "optional": "optional"
   },
   "common": {
     "add": "Add",
@@ -226,7 +227,12 @@
     "sampleRows": "Sample rows",
     "tableCount": "{{count}} tables",
     "fieldCount": "{{count}} fields",
-    "duplicateTable": "Duplicate table"
+    "duplicateTable": "Duplicate table",
+    "duplicateField": "Another field in this table already has this name.",
+    "howItWorks": "How it works",
+    "how1": "Add your source tables and their fields.",
+    "how2": "Mark which fields are keys, measures and dates (optional).",
+    "how3": "Shape the final tables, connect them, and copy the script into Qlik."
   },
   "rolesStep": {
     "title": "Field roles",
@@ -289,7 +295,10 @@
     "addToTarget": "Add to target",
     "fieldFromOtherTable": "From another table",
     "removeColumn": "Remove column",
-    "renameColumn": "Rename column"
+    "renameColumn": "Rename column",
+    "duplicateName": "This name is already used in this table.",
+    "moreOptions": "More options",
+    "notConnected": "{{table}} is not connected to {{primary}} yet."
   },
   "formula": {
     "title": "Calculated field",
@@ -421,5 +430,27 @@
     "alias": "alias",
     "column": "column",
     "composite key": "composite key"
+  },
+  "connect": {
+    "title": "Connect tables",
+    "button": "Connect tables",
+    "rowsFrom": "Rows come from",
+    "other": "Table to connect",
+    "how": "How should {{right}} be connected to {{left}}?",
+    "join": "Add its columns to {{left}}",
+    "joinHint": "One wider table (join). Every row of {{left}} is kept; matching rows of {{right}} fill the new columns.",
+    "association": "Keep both tables, link them",
+    "associationHint": "Qlik links them through the shared field (association). Fields stay in their own table.",
+    "concatenate": "Append its rows under {{left}}",
+    "concatenateHint": "Same kind of data from two sources, e.g. 2023 and 2024 (concatenate).",
+    "matchOn": "Match rows on",
+    "addPair": "Add another field pair",
+    "advanced": "More relationship types…",
+    "swap": "Swap tables",
+    "linked": "{{right}} is now connected to {{left}}.",
+    "keptSeparate": "{{right}} stays a separate table, so its fields are not added to {{target}}.",
+    "fixConnect": "Connect {{table}}…",
+    "noOtherTables": "Add a second table first.",
+    "sameName": "Both tables will use the name \"{{name}}\" for this field."
   }
 }
