@@ -49,10 +49,6 @@ FROM [lib://DataFiles/Products.csv] (txt, utf8, embedded labels, delimiter is ';
 
 // Regions (Inline)
 Regions:
-LOAD
-    RegionCode,
-    RegionName
-;
 LOAD * INLINE [
 RegionCode, RegionName
 TR, Türkiye
@@ -145,6 +141,5 @@ STORE Fact_Sales INTO [lib://QVD/Fact_Sales.qvd] (qvd);
 // Drop temporary tables that were only used to build the final model
 DROP TABLE Sales;
 DROP TABLE Regions;
-DROP TABLE Sales_By_Customer;
 "
 `;
