@@ -413,7 +413,8 @@
     "JOIN_FANOUT_RISK": "\"{{table}}\" tablosunun \"{{fields}}\" alanı benzersiz veya anahtar olarak işaretlenmediği için join satırları çoğaltabilir.",
     "JOIN_UNINTENDED_COMMON_FIELD": "Seçilen anahtarlar dışında \"{{left}}\" ve \"{{right}}\" tabloları {{fields}} alanlarını da paylaşıyor. Join bunlar üzerinden de eşleşir.",
     "IMPLICIT_CONCATENATE": "\"{{left}}\" ve \"{{right}}\" tablolarının alanları aynı. Qlik bunları otomatik olarak tek tabloda birleştirir.",
-    "DROPPED_TABLE_REFERENCED": "\"{{by}}\", \"{{table}}\" tablosuna bağlı ama \"{{table}}\" scriptin sonunda siliniyor."
+    "DROPPED_TABLE_REFERENCED": "\"{{by}}\", \"{{table}}\" tablosuna bağlı ama \"{{table}}\" scriptin sonunda siliniyor.",
+    "APPLYMAP_MAPPING_UNAVAILABLE": "\"{{map}}\" eşlemesi \"{{right}}\" hedef tablosundan oluşturuluyor; bu yüzden yalnızca diğer hedef tablolarda kullanılabilir, \"{{left}}\" kaynak tablosunda kullanılamaz."
   },
   "fixes": {
     "renameField": "\"{{newName}}\" olarak yeniden adlandır",

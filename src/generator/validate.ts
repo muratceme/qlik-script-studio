@@ -218,6 +218,26 @@ export function validateWithContext(ctx: Context): Diagnostic[] {
         out.push(error('APPLYMAP_FIELDS_MISSING', { left: left.name, right: right.name }, refs));
       } else {
         checkName(out, opts.outputName, 'field', refs);
+        // The mapping is loaded RESIDENT from the right table; a target only exists in the Transform section.
+        if (!isSourceTable(right) && isSourceTable(left)) {
+          out.push(
+            error(
+              'APPLYMAP_MAPPING_UNAVAILABLE',
+              { left: left.name, right: right.name, map: opts.mapName },
+              refs,
+            ),
+          );
+        }
+        const existing = (
+          isSourceTable(left)
+            ? left.fields
+                .filter((f) => f.role !== 'ignore')
+                .map((f) => ctx.outName({ tableId: left.id, fieldId: f.id }))
+            : left.columns.map((c) => ctx.columnName(c))
+        ).map((n) => n.toLowerCase());
+        if (existing.includes(opts.outputName.trim().toLowerCase())) {
+          out.push(error('DUPLICATE_FIELD_NAME', { table: left.name, name: opts.outputName }, refs));
+        }
       }
     }
   }

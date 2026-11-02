@@ -52,8 +52,9 @@ export function buildScript(project: Project): GenerateResult {
   w.section('Sources');
   const sources = orderSources(ctx);
   if (sources.ok) {
+    const state = { connectionId: null as string | null };
     for (const source of sources.items) {
-      emitSource(ctx, w, source);
+      emitSource(ctx, w, source, state);
       emitMappingsFor(ctx, w, source.id);
     }
   }
@@ -62,8 +63,12 @@ export function buildScript(project: Project): GenerateResult {
   const transform = orderTransform(ctx);
   if (transform.ok) {
     for (const node of transform.items) {
-      if (node.kind === 'target') emitTarget(ctx, w, node.target);
-      else emitLink(ctx, w, node.link);
+      if (node.kind === 'target') {
+        emitTarget(ctx, w, node.target);
+        emitMappingsFor(ctx, w, node.target.id);
+      } else {
+        emitLink(ctx, w, node.link);
+      }
     }
   }
 

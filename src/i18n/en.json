@@ -413,7 +413,8 @@
     "JOIN_FANOUT_RISK": "Joining on \"{{fields}}\" of \"{{table}}\" may duplicate rows because the field is not marked unique or as a key.",
     "JOIN_UNINTENDED_COMMON_FIELD": "Besides the chosen keys, \"{{left}}\" and \"{{right}}\" also share {{fields}}. The join will match on those too.",
     "IMPLICIT_CONCATENATE": "\"{{left}}\" and \"{{right}}\" have identical fields. Qlik will append them into one table automatically.",
-    "DROPPED_TABLE_REFERENCED": "\"{{by}}\" is linked to \"{{table}}\", but \"{{table}}\" is dropped at the end of the script."
+    "DROPPED_TABLE_REFERENCED": "\"{{by}}\" is linked to \"{{table}}\", but \"{{table}}\" is dropped at the end of the script.",
+    "APPLYMAP_MAPPING_UNAVAILABLE": "The mapping \"{{map}}\" is built from the target table \"{{right}}\", so it can only be used by other target tables, not by the source table \"{{left}}\"."
   },
   "fixes": {
     "renameField": "Rename to \"{{newName}}\"",

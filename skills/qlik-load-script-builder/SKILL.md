@@ -307,7 +307,10 @@ US, "United States, of America"              values containing , or " are double
 ];
 ```
 
-Mapping tables, emitted right after the source they read:
+Mapping tables, emitted right after the table they read (a source in the
+Sources section, or a target in the Transform section; a mapping built from a
+target can only be used by targets that come after it). Consecutive SQL loads
+on the same connection share one `LIB CONNECT TO`.
 
 ```
 // Mapping Map_Region: RegionCode -> RegionName
@@ -453,6 +456,7 @@ LET vMaxDate = Null();
 | FIELD_NOT_REACHABLE                                                                                      | target uses a field of a table not merged into its primary (fix: create a left join on the common key) |
 | FIELD_IGNORED                                                                                            | target uses a field whose role is `ignore` (fix: set the role to dimension)                            |
 | LINK_NO_PAIRS / LINK_SELF / LINK_TABLE_MISSING / APPLYMAP_FIELDS_MISSING                                 | incomplete link                                                                                        |
+| APPLYMAP_MAPPING_UNAVAILABLE                                                                             | mapping built from a target table used by a source table (sources load before targets)                 |
 | CALENDAR_DATE_MISSING                                                                                    | calendar enabled without a date field                                                                  |
 | CYCLIC_DEPENDENCY                                                                                        | targets and links depend on each other in a loop                                                       |
 | RAW_EXPRESSION_EMPTY                                                                                     | a raw expression is blank                                                                              |

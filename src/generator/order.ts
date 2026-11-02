@@ -68,6 +68,11 @@ export function orderTransform(ctx: Context): OrderResult<TransformNode> {
     const deps: string[] = [];
     const primary = node.target.primarySourceId;
     if (primary && ctx.targets.has(primary)) deps.push(`T:${primary}`);
+    // Mappings built from a target must exist before this target's load uses ApplyMap().
+    for (const l of ctx.project.links) {
+      if (l.type === 'applyMap' && l.leftTableId === node.target.id && ctx.targets.has(l.rightTableId))
+        deps.push(`T:${l.rightTableId}`);
+    }
     // Merges into the primary table must happen before this target reads it,
     // unless the merge brings this very target into the primary.
     for (const l of ctx.project.links) {
