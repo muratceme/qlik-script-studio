@@ -73,7 +73,17 @@ function inlineValue(value: string): string {
  * Emits the LOAD for one source table. The statement includes extra columns
  * added by links (composite keys, ApplyMap results) and skips ignored fields.
  */
-export function emitSource(ctx: Context, w: ScriptWriter, table: SourceTable): void {
+export interface SourceEmitState {
+  /** Connection of the last SQL load, so consecutive loads share one CONNECT statement. */
+  connectionId: string | null;
+}
+
+export function emitSource(
+  ctx: Context,
+  w: ScriptWriter,
+  table: SourceTable,
+  state: SourceEmitState = { connectionId: null },
+): void {
   const scope = defaultScope(ctx);
   const suppressed = suppressedFieldIds(ctx, table.id);
   const columns: { expr: string; alias: string | null }[] = [];
@@ -104,10 +114,11 @@ export function emitSource(ctx: Context, w: ScriptWriter, table: SourceTable): v
   }
   if (table.kind === 'sql') {
     const connection = table.connectionId ? ctx.connections.get(table.connectionId) : undefined;
-    if (connection) {
+    if (connection && state.connectionId !== connection.id) {
       w.line(
         `${ctx.project.settings.dialect === 'view' ? 'CONNECT TO' : 'LIB CONNECT TO'} ${qStr(connection.name)};`,
       );
+      state.connectionId = connection.id;
     }
   }
   w.line(`${qTable(table.name)}:`);

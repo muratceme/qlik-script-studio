@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Build Qlik Sense / QlikView load scripts visually, without writing code. Runs entirely in the browser.",
+  "description": "Script Studio for Qlik: build Qlik Sense / QlikView load scripts visually, without writing code. Runs entirely in the browser.",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

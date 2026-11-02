@@ -45,7 +45,7 @@ function defaultExpr(kind: Kind, fields: ReachableField[], applyMapLinkId: strin
       return {
         kind,
         part: 'year',
-        of: firstField(fields, (f) => f.field.role === 'date' || f.field.dataType === 'date'),
+        of: firstField(fields, (f) => f.role === 'date' || f.dataType === 'date'),
       };
     case 'applyMap':
       return { kind, linkId: applyMapLinkId ?? '', key: firstField(fields) };

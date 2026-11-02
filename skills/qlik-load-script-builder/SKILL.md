@@ -1,6 +1,6 @@
 ---
 name: qlik-load-script-builder
-description: Generates Qlik Sense / QlikView load scripts (LOAD, QVD, Excel, CSV, SQL, inline, join, keep, concatenate, ApplyMap, GROUP BY, WHERE, calculated fields, master calendar, STORE, synthetic key and circular reference fixes) from a user's table and field definitions, using the same deterministic rules as the Qlik Script Studio app.
+description: Generates Qlik Sense / QlikView load scripts (LOAD, QVD, Excel, CSV, SQL, inline, join, keep, concatenate, ApplyMap, GROUP BY, WHERE, calculated fields, master calendar, STORE, synthetic key and circular reference fixes) from a user's table and field definitions, using the same deterministic rules as the Script Studio for Qlik app.
 ---
 
 # Qlik load script builder
@@ -8,7 +8,7 @@ description: Generates Qlik Sense / QlikView load scripts (LOAD, QVD, Excel, CSV
 Use this skill when someone describes source tables, fields and the final tables
 they want, and needs a **valid, readable Qlik load script**. Follow the rules
 below exactly; they are the rules implemented in `src/generator` of
-[Qlik Script Studio](https://github.com/muratceme/qlik-script-studio), so a
+[Script Studio for Qlik](https://github.com/muratceme/qlik-script-studio), so a
 script you write by hand and a script the app generates for the same model are
 interchangeable.
 
@@ -307,7 +307,10 @@ US, "United States, of America"              values containing , or " are double
 ];
 ```
 
-Mapping tables, emitted right after the source they read:
+Mapping tables, emitted right after the table they read (a source in the
+Sources section, or a target in the Transform section; a mapping built from a
+target can only be used by targets that come after it). Consecutive SQL loads
+on the same connection share one `LIB CONNECT TO`.
 
 ```
 // Mapping Map_Region: RegionCode -> RegionName
@@ -441,21 +444,23 @@ LET vMaxDate = Null();
 
 ## 3. Validation (errors, no script)
 
-| Code                                                                                                     | Meaning                                                                                                |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| EMPTY_PROJECT                                                                                            | no source tables                                                                                       |
-| DUPLICATE_TABLE_NAME                                                                                     | two tables (incl. mapping tables and the calendar) share a name, case-insensitive                      |
-| DUPLICATE_FIELD_NAME                                                                                     | two output names in one table                                                                          |
-| INVALID_NAME / EMPTY_NAME                                                                                | name contains `]` or a line break / is blank                                                           |
-| SOURCE_PATH_MISSING / SOURCE_CONNECTION_MISSING / EXCEL_SHEET_MISSING / SQL_QUERY_MISSING / INLINE_EMPTY | incomplete source                                                                                      |
-| TARGET_NO_COLUMNS / TARGET_PRIMARY_MISSING                                                               | incomplete target                                                                                      |
-| FIELD_NOT_FOUND                                                                                          | a reference points to a field or column that does not exist                                            |
-| FIELD_NOT_REACHABLE                                                                                      | target uses a field of a table not merged into its primary (fix: create a left join on the common key) |
-| FIELD_IGNORED                                                                                            | target uses a field whose role is `ignore` (fix: set the role to dimension)                            |
-| LINK_NO_PAIRS / LINK_SELF / LINK_TABLE_MISSING / APPLYMAP_FIELDS_MISSING                                 | incomplete link                                                                                        |
-| CALENDAR_DATE_MISSING                                                                                    | calendar enabled without a date field                                                                  |
-| CYCLIC_DEPENDENCY                                                                                        | targets and links depend on each other in a loop                                                       |
-| RAW_EXPRESSION_EMPTY                                                                                     | a raw expression is blank                                                                              |
+| Code                                                                                                     | Meaning                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| EMPTY_PROJECT                                                                                            | no source tables                                                                                                                  |
+| DUPLICATE_TABLE_NAME                                                                                     | two tables (incl. mapping tables and the calendar) share a name, case-insensitive                                                 |
+| DUPLICATE_FIELD_NAME                                                                                     | two output names in one table                                                                                                     |
+| INVALID_NAME / EMPTY_NAME                                                                                | name contains `]` or a line break / is blank                                                                                      |
+| SOURCE_PATH_MISSING / SOURCE_CONNECTION_MISSING / EXCEL_SHEET_MISSING / SQL_QUERY_MISSING / INLINE_EMPTY | incomplete source                                                                                                                 |
+| TARGET_PRIMARY_MISSING                                                                                   | target is not built from any table                                                                                                |
+| TARGET_NO_COLUMNS                                                                                        | target has no columns; when building a whole script such targets (and their links) are skipped with a warning instead of blocking |
+| FIELD_NOT_FOUND                                                                                          | a reference points to a field or column that does not exist                                                                       |
+| FIELD_NOT_REACHABLE                                                                                      | target uses a field of a table not merged into its primary (fix: create a left join on the common key)                            |
+| FIELD_IGNORED                                                                                            | target uses a field whose role is `ignore` (fix: set the role to dimension)                                                       |
+| LINK_NO_PAIRS / LINK_SELF / LINK_TABLE_MISSING / APPLYMAP_FIELDS_MISSING                                 | incomplete link                                                                                                                   |
+| APPLYMAP_MAPPING_UNAVAILABLE                                                                             | mapping built from a target table used by a source table (sources load before targets)                                            |
+| CALENDAR_DATE_MISSING                                                                                    | calendar enabled without a date field                                                                                             |
+| CYCLIC_DEPENDENCY                                                                                        | targets and links depend on each other in a loop                                                                                  |
+| RAW_EXPRESSION_EMPTY                                                                                     | a raw expression is blank                                                                                                         |
 
 ## 4. Data-model analysis (warnings with fixes)
 
@@ -745,7 +750,7 @@ Computed on the tables that **survive** cleanup, using their final field names
 
 ```qlik
 ///$tab Main
-// Generated by Qlik Script Studio (https://github.com/muratceme/qlik-script-studio)
+// Generated by Script Studio for Qlik (https://github.com/muratceme/qlik-script-studio)
 // Project: Sales example
 // This script is generated from a visual model. Edit the model and regenerate instead of editing by hand.
 

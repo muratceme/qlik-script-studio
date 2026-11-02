@@ -37,6 +37,7 @@ describe('translations', () => {
       'LINK_SELF',
       'LINK_TABLE_MISSING',
       'APPLYMAP_FIELDS_MISSING',
+      'APPLYMAP_MAPPING_UNAVAILABLE',
       'CALENDAR_DATE_MISSING',
       'CYCLIC_DEPENDENCY',
       'RAW_EXPRESSION_EMPTY',

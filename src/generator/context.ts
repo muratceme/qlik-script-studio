@@ -81,10 +81,29 @@ export function buildContext(project: Project): Context {
     return entry && entry.tableId === ref.tableId ? entry.field : undefined;
   };
 
+  const mergeTypes = new Set([...JOIN_TYPES, 'concatenate']);
+  /** Name a source field has inside a target's load, after merges into the target's primary table. */
+  const nameInTarget = (targetId: string, ref: FieldRef): string => {
+    const primary = targets.get(targetId)?.primarySourceId;
+    if (primary && primary !== ref.tableId) {
+      for (const link of project.links) {
+        if (link.leftTableId !== primary || link.rightTableId !== ref.tableId || !mergeTypes.has(link.type))
+          continue;
+        if (link.compositeKey && link.pairs.length >= 2) continue;
+        const pair = link.pairs.find((p) => p.rightFieldId === ref.fieldId);
+        if (pair) return outName({ tableId: primary, fieldId: pair.leftFieldId });
+      }
+    }
+    return outName(ref);
+  };
+
   const columnName = (column: TargetColumn): string => {
     switch (column.kind) {
-      case 'field':
-        return column.alias ?? outName(column.ref);
+      case 'field': {
+        if (column.alias !== null) return column.alias;
+        const owner = columns.get(column.id)?.tableId;
+        return owner ? nameInTarget(owner, column.ref) : outName(column.ref);
+      }
       case 'measure':
       case 'calculated':
         return column.alias;

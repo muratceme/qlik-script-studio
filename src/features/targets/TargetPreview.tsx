@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { Project, TargetTable } from '@/model/types';
 import { RoleBadge } from '@/components/ui';
 import { previewExpr } from './exprPreview';
+import { resolveRef } from '@/lib/resolveRef';
 
 /** Column headers with roles and, when a sample file exists, the first rows. */
 export function TargetPreview({ project, target }: { project: Project; target: TargetTable }) {
@@ -20,10 +21,10 @@ export function TargetPreview({ project, target }: { project: Project; target: T
         roleLabel: t('design.calculated'),
       };
     }
+    const resolved = resolveRef(project, c.ref);
     const source = project.sources.find((s) => s.id === c.ref.tableId);
     const idx = source?.fields.findIndex((f) => f.id === c.ref.fieldId) ?? -1;
-    const field = source?.fields[idx];
-    const name = c.kind === 'measure' ? c.alias : (c.alias ?? field?.alias ?? field?.name ?? '?');
+    const name = c.kind === 'measure' ? c.alias : (c.alias ?? resolved?.name ?? '?');
     const local = source?.id === primary?.id;
     const values = rows.map((r) =>
       c.kind === 'measure'
@@ -32,7 +33,7 @@ export function TargetPreview({ project, target }: { project: Project; target: T
           ? (r[idx] ?? '')
           : '…',
     );
-    const role = c.kind === 'measure' ? 'measure' : (field?.role ?? 'dimension');
+    const role = c.kind === 'measure' ? 'measure' : (resolved?.role ?? 'dimension');
     return { id: c.id, name, role, values, roleLabel: t(`roles.${role}`) };
   });
 

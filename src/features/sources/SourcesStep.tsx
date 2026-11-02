@@ -16,21 +16,31 @@ export function SourcesStep() {
 
   if (sources.length === 0) {
     return (
-      <EmptyState
-        icon={<Database />}
-        title={t('sources.empty')}
-        hint={t('sources.emptyHint')}
-        actions={
-          <>
-            <Button variant="primary" icon={<Plus />} onClick={() => addSourceTable()}>
-              {t('sources.addTable')}
-            </Button>
-            <Button icon={<Sparkles />} onClick={loadSampleProject}>
-              {t('app.loadSample')}
-            </Button>
-          </>
-        }
-      />
+      <div className="flex flex-col gap-4">
+        <section className="rounded-xl border border-border bg-surface-raised p-4">
+          <h2 className="text-sm font-semibold">{t('sources.howItWorks')}</h2>
+          <ol className="mt-2 grid list-decimal gap-2 pl-5 text-sm text-fg-muted sm:grid-cols-3 sm:gap-4">
+            <li>{t('sources.how1')}</li>
+            <li>{t('sources.how2')}</li>
+            <li>{t('sources.how3')}</li>
+          </ol>
+        </section>
+        <EmptyState
+          icon={<Database />}
+          title={t('sources.empty')}
+          hint={t('sources.emptyHint')}
+          actions={
+            <>
+              <Button variant="primary" icon={<Plus />} onClick={() => addSourceTable()}>
+                {t('sources.addTable')}
+              </Button>
+              <Button icon={<Sparkles />} onClick={loadSampleProject}>
+                {t('app.loadSample')}
+              </Button>
+            </>
+          }
+        />
+      </div>
     );
   }
 

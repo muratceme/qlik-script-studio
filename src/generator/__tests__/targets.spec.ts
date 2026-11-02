@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateScript, validateModel } from '@/generator';
+import { buildScript, generateScript, validateModel } from '@/generator';
 import type { ConditionGroup, Expr, TargetColumn } from '@/model/types';
 import { col, link, project, ref, starSources, target } from './helpers';
 
@@ -318,5 +318,22 @@ describe('targets', () => {
         'TARGET_PRIMARY_MISSING',
       ].sort(),
     );
+  });
+});
+
+describe('empty targets', () => {
+  it('are skipped with a warning instead of blocking the script', () => {
+    const p = project({
+      sources: starSources(),
+      targets: [target('t', 'Fact', 's', [col('c1', 's', 's-o')]), target('e', 'Empty', 's', [])],
+      links: [link('l', 'leftJoin', 'e', 'c', [['nope', 'c-c']])],
+      calendar: { enabled: true, tableName: 'Calendar', dateField: ref('e', 'x'), parts: ['year'] },
+    });
+    const result = buildScript(p);
+    expect(result.errors).toEqual([]);
+    expect(result.warnings.map((w) => w.code)).toContain('TARGET_NO_COLUMNS');
+    expect(result.script).toContain('Fact:');
+    expect(result.script).not.toContain('Empty');
+    expect(result.script).not.toContain('Calendar');
   });
 });

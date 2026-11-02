@@ -40,11 +40,39 @@ export class ModelValidationError extends Error {
   }
 }
 
-export function buildScript(project: Project): GenerateResult {
+/**
+ * Targets without columns are usually tables the user has just created. They
+ * are left out of the script (with a warning) instead of blocking it.
+ */
+function withoutEmptyTargets(project: Project): { project: Project; skipped: Diagnostic[] } {
+  const empty = project.targets.filter((t) => t.columns.length === 0);
+  if (empty.length === 0) return { project, skipped: [] };
+  const ids = new Set(empty.map((t) => t.id));
+  const pruned: Project = {
+    ...project,
+    targets: project.targets.filter((t) => !ids.has(t.id)),
+    links: project.links.filter((l) => !ids.has(l.leftTableId) && !ids.has(l.rightTableId)),
+    calendar:
+      project.calendar && project.calendar.dateField && ids.has(project.calendar.dateField.tableId)
+        ? { ...project.calendar, enabled: false }
+        : project.calendar,
+  };
+  const skipped = empty.map((t): Diagnostic => ({
+    severity: 'warning',
+    code: 'TARGET_NO_COLUMNS',
+    params: { table: t.name },
+    refs: { tableIds: [t.id], targetIds: [t.id] },
+    fixes: [],
+  }));
+  return { project: pruned, skipped };
+}
+
+export function buildScript(input: Project): GenerateResult {
+  const { project, skipped } = withoutEmptyTargets(input);
   const ctx = buildContext(project);
   const errors = validateWithContext(ctx);
-  if (errors.length > 0) return { script: null, errors, warnings: [] };
-  const warnings = analyzeWithContext(ctx);
+  if (errors.length > 0) return { script: null, errors, warnings: skipped };
+  const warnings = [...skipped, ...analyzeWithContext(ctx)];
 
   const w = new ScriptWriter();
   emitSettings(ctx, w);
@@ -52,8 +80,9 @@ export function buildScript(project: Project): GenerateResult {
   w.section('Sources');
   const sources = orderSources(ctx);
   if (sources.ok) {
+    const state = { connectionId: null as string | null };
     for (const source of sources.items) {
-      emitSource(ctx, w, source);
+      emitSource(ctx, w, source, state);
       emitMappingsFor(ctx, w, source.id);
     }
   }
@@ -62,8 +91,12 @@ export function buildScript(project: Project): GenerateResult {
   const transform = orderTransform(ctx);
   if (transform.ok) {
     for (const node of transform.items) {
-      if (node.kind === 'target') emitTarget(ctx, w, node.target);
-      else emitLink(ctx, w, node.link);
+      if (node.kind === 'target') {
+        emitTarget(ctx, w, node.target);
+        emitMappingsFor(ctx, w, node.target.id);
+      } else {
+        emitLink(ctx, w, node.link);
+      }
     }
   }
 

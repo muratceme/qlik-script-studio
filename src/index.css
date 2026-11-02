@@ -141,3 +141,7 @@ body {
 .react-flow__minimap-mask {
   fill: color-mix(in srgb, var(--fg) 12%, transparent);
 }
+/* Edge labels must stay clickable and visible even where an edge passes under a node. */
+.react-flow__edgelabel-renderer {
+  z-index: 1001;
+}

@@ -17,7 +17,6 @@ import {
 import '@xyflow/react/dist/style.css';
 import { ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import type { Link } from '@/model/types';
-import { newLink } from '@/model/defaults';
 import { Button, EmptyState } from '@/components/ui';
 import { useProjectStore } from '@/store/projectStore';
 import { setNodePosition } from '@/store/linkActions';
@@ -27,6 +26,7 @@ import { buildEdges, buildNodes, parseHandleId, type TableNode as TableNodeType 
 import { TableNode } from './TableNode';
 import { LinkEdge } from './LinkEdge';
 import { LinkDialog } from './LinkDialog';
+import { ConnectTablesDialog } from './ConnectTablesDialog';
 import { cn } from '@/lib/cn';
 import { EdgeClickContext } from './edgeClick';
 
@@ -44,6 +44,7 @@ function Canvas() {
   const edges = useMemo(() => buildEdges(project, diagnostics), [project, diagnostics]);
   const [nodes, setNodes] = useState<TableNodeType[]>(modelNodes);
   const [dialogLink, setDialogLink] = useState<Link | null>(null);
+  const [connect, setConnect] = useState<{ left: string; right: string } | null>(null);
   const [issuesOpen, setIssuesOpen] = useState(true);
 
   // Keep local node state (needed for smooth dragging) in sync with the model.
@@ -62,9 +63,7 @@ function Canvas() {
     const to = parseHandleId(connection.targetHandle);
     if (!from || !to || from.tableId === to.tableId) return;
     // Dragging from A to B: B is the table merged into (left), A is loaded resident (right).
-    const link = newLink('association', to.tableId, from.tableId);
-    link.pairs = [{ leftFieldId: to.fieldId, rightFieldId: from.fieldId }];
-    setDialogLink(link);
+    setConnect({ left: to.tableId, right: from.tableId });
   }, []);
 
   const openLink = useCallback(
@@ -174,6 +173,13 @@ function Canvas() {
         ) : null}
       </section>
       <LinkDialog link={dialogLink} open={dialogLink !== null} onClose={() => setDialogLink(null)} />
+      <ConnectTablesDialog
+        open={connect !== null}
+        onClose={() => setConnect(null)}
+        leftTableId={connect?.left ?? null}
+        rightTableId={connect?.right ?? null}
+        lockTables
+      />
     </div>
   );
 }
