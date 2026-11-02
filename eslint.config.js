@@ -30,6 +30,7 @@ export default tseslint.config(
   {
     // The generator must stay pure: no React, no DOM, no store imports.
     files: ['src/generator/**/*.ts', 'src/model/**/*.ts'],
+    ignores: ['**/__tests__/**'],
     rules: {
       'no-restricted-imports': [
         'error',
