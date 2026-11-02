@@ -6,6 +6,7 @@ import { AGGREGATIONS } from '@/model/types';
 import { Button, IconButton, RoleBadge, Select, TextInput } from '@/components/ui';
 import { moveColumn, removeColumn, setColumnAggregation, updateColumn } from '@/store/targetActions';
 import { previewExpr } from './exprPreview';
+import { resolveRef } from '@/lib/resolveRef';
 
 export function ColumnRow({
   project,
@@ -25,12 +26,11 @@ export function ColumnRow({
   onConnect: (rightTableId: string) => void;
 }) {
   const { t } = useTranslation();
-  const source =
-    column.kind !== 'calculated' ? project.sources.find((s) => s.id === column.ref.tableId) : undefined;
-  const field =
-    column.kind !== 'calculated' ? source?.fields.find((f) => f.id === column.ref.fieldId) : undefined;
+  const resolved = column.kind !== 'calculated' ? resolveRef(project, column.ref) : null;
+  const source = resolved ? { id: resolved.tableId, name: resolved.tableName } : undefined;
+  const field = resolved;
   const foreign = source && source.id !== target.primarySourceId;
-  const baseName = field ? (field.alias ?? field.name) : '';
+  const baseName = field ? field.name : '';
   const duplicate = issues.find((d) => d.code === 'DUPLICATE_FIELD_NAME');
   const unreachable = issues.find((d) => d.code === 'FIELD_NOT_REACHABLE');
   const other = issues.filter((d) => d !== duplicate && d !== unreachable);

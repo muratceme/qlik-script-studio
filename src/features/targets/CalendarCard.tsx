@@ -5,6 +5,7 @@ import { DATE_PARTS } from '@/model/types';
 import { Checkbox, Labeled, Select, TextInput } from '@/components/ui';
 import { useProjectStore } from '@/store/projectStore';
 import { setCalendar, updateCalendar } from '@/store/targetActions';
+import { resolveRef } from '@/lib/resolveRef';
 
 export function CalendarCard() {
   const { t } = useTranslation();
@@ -26,12 +27,11 @@ export function CalendarCard() {
   for (const tgt of project.targets) {
     for (const c of tgt.columns) {
       if (c.kind !== 'field') continue;
-      const src = project.sources.find((s) => s.id === c.ref.tableId);
-      const f = src?.fields.find((x) => x.id === c.ref.fieldId);
-      if (f && (f.role === 'date' || f.dataType === 'date'))
+      const r = resolveRef(project, { tableId: tgt.id, fieldId: c.id });
+      if (r && (r.role === 'date' || r.dataType === 'date'))
         options.push({
           key: `${tgt.id}:${c.id}`,
-          label: `${tgt.name}.${c.alias ?? f.alias ?? f.name}`,
+          label: `${tgt.name}.${r.name}`,
           ref: { tableId: tgt.id, fieldId: c.id },
         });
     }

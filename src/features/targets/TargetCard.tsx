@@ -29,8 +29,10 @@ export function TargetCard({
   onConnect: (rightTableId: string) => void;
 }) {
   const { t } = useTranslation();
-  const { errors } = useScript();
-  const targetErrors = errors.filter((d) => d.refs.tableIds?.[0] === target.id);
+  const { errors, warnings } = useScript();
+  const targetErrors = [...errors, ...warnings.filter((d) => d.code === 'TARGET_NO_COLUMNS')].filter(
+    (d) => d.refs.tableIds?.[0] === target.id,
+  );
   const columnIssues = (columnId: string) => targetErrors.filter((d) => d.refs.fieldIds?.includes(columnId));
   const tableLevel = targetErrors.filter((d) => !d.refs.fieldIds || d.refs.fieldIds.length === 0);
   const advancedOpen = target.distinct || !target.keepInModel || target.store.enabled;

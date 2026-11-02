@@ -3,6 +3,7 @@ import { createId } from '@/model/id';
 import type { Aggregation, Expr, FieldRef, TargetColumn, TargetTable } from '@/model/types';
 import { useProjectStore } from './projectStore';
 import { useUiStore } from './uiStore';
+import { resolveRef } from '@/lib/resolveRef';
 
 const update = (recipe: Parameters<ReturnType<typeof useProjectStore.getState>['update']>[0]) =>
   useProjectStore.getState().update(recipe);
@@ -57,11 +58,11 @@ export function addFieldColumn(targetId: string, ref: FieldRef): void {
       )
     )
       return;
+    if (ref.tableId === target.id) return;
     if (!target.primarySourceId) target.primarySourceId = ref.tableId;
-    const source = p.sources.find((s) => s.id === ref.tableId);
-    const field = source?.fields.find((f) => f.id === ref.fieldId);
-    const fieldName = field ? (field.alias ?? field.name) : 'Field';
-    if (field?.role === 'measure') {
+    const resolved = resolveRef(p, ref);
+    const fieldName = resolved?.name ?? 'Field';
+    if (resolved?.role === 'measure' && !resolved.isTarget) {
       target.columns.push({
         id: createId(),
         kind: 'measure',
@@ -87,9 +88,7 @@ export function setColumnAggregation(
     const index = target.columns.findIndex((c) => c.id === columnId);
     const column = target.columns[index];
     if (!column || column.kind === 'calculated') return;
-    const source = p.sources.find((s) => s.id === column.ref.tableId);
-    const field = source?.fields.find((f) => f.id === column.ref.fieldId);
-    const fieldName = field ? (field.alias ?? field.name) : 'Field';
+    const fieldName = resolveRef(p, column.ref)?.name ?? 'Field';
     if (aggregation === null) {
       target.columns[index] = { id: column.id, kind: 'field', ref: column.ref, alias: null };
     } else {

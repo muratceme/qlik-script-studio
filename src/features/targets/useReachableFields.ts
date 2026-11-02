@@ -1,14 +1,11 @@
 import { useMemo } from 'react';
-import type { Field, FieldRef, Project, SourceTable, TargetTable } from '@/model/types';
+import type { FieldRef, Project, TargetTable } from '@/model/types';
 import { MERGE_TYPES } from '@/generator/plan';
 import { useProjectStore } from '@/store/projectStore';
+import { resolveRef, type ResolvedRef } from '@/lib/resolveRef';
 
-export interface ReachableField {
+export interface ReachableField extends ResolvedRef {
   ref: FieldRef;
-  table: SourceTable;
-  field: Field;
-  /** Display name after alias. */
-  name: string;
   /** True when the field lives in the primary table itself. */
   primary: boolean;
 }
@@ -23,17 +20,14 @@ export function reachableFields(project: Project, target: TargetTable | null): R
   }
   const out: ReachableField[] = [];
   for (const id of ids) {
-    const table = project.sources.find((s) => s.id === id);
-    if (!table) continue;
-    for (const field of table.fields) {
-      if (field.role === 'ignore') continue;
-      out.push({
-        ref: { tableId: table.id, fieldId: field.id },
-        table,
-        field,
-        name: field.alias ?? field.name,
-        primary: id === target.primarySourceId,
-      });
+    const source = project.sources.find((s) => s.id === id);
+    const refs: FieldRef[] = source
+      ? source.fields.filter((f) => f.role !== 'ignore').map((f) => ({ tableId: id, fieldId: f.id }))
+      : (project.targets.find((t) => t.id === id)?.columns.map((c) => ({ tableId: id, fieldId: c.id })) ??
+        []);
+    for (const ref of refs) {
+      const resolved = resolveRef(project, ref);
+      if (resolved) out.push({ ...resolved, ref, primary: id === target.primarySourceId });
     }
   }
   return out;
@@ -45,12 +39,6 @@ export function useReachableFields(target: TargetTable | null): ReachableField[]
 }
 
 export function fieldLabel(project: Project, ref: FieldRef): string {
-  const table = project.sources.find((s) => s.id === ref.tableId);
-  const field = table?.fields.find((f) => f.id === ref.fieldId);
-  if (table && field) return `${table.name}.${field.alias ?? field.name}`;
-  const target = project.targets.find((t) => t.id === ref.tableId);
-  const column = target?.columns.find((c) => c.id === ref.fieldId);
-  if (target && column)
-    return `${target.name}.${column.kind === 'field' ? (column.alias ?? '?') : column.alias}`;
-  return '?';
+  const r = resolveRef(project, ref);
+  return r ? `${r.tableName}.${r.name}` : '?';
 }

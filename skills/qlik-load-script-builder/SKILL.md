@@ -444,22 +444,23 @@ LET vMaxDate = Null();
 
 ## 3. Validation (errors, no script)
 
-| Code                                                                                                     | Meaning                                                                                                |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| EMPTY_PROJECT                                                                                            | no source tables                                                                                       |
-| DUPLICATE_TABLE_NAME                                                                                     | two tables (incl. mapping tables and the calendar) share a name, case-insensitive                      |
-| DUPLICATE_FIELD_NAME                                                                                     | two output names in one table                                                                          |
-| INVALID_NAME / EMPTY_NAME                                                                                | name contains `]` or a line break / is blank                                                           |
-| SOURCE_PATH_MISSING / SOURCE_CONNECTION_MISSING / EXCEL_SHEET_MISSING / SQL_QUERY_MISSING / INLINE_EMPTY | incomplete source                                                                                      |
-| TARGET_NO_COLUMNS / TARGET_PRIMARY_MISSING                                                               | incomplete target                                                                                      |
-| FIELD_NOT_FOUND                                                                                          | a reference points to a field or column that does not exist                                            |
-| FIELD_NOT_REACHABLE                                                                                      | target uses a field of a table not merged into its primary (fix: create a left join on the common key) |
-| FIELD_IGNORED                                                                                            | target uses a field whose role is `ignore` (fix: set the role to dimension)                            |
-| LINK_NO_PAIRS / LINK_SELF / LINK_TABLE_MISSING / APPLYMAP_FIELDS_MISSING                                 | incomplete link                                                                                        |
-| APPLYMAP_MAPPING_UNAVAILABLE                                                                             | mapping built from a target table used by a source table (sources load before targets)                 |
-| CALENDAR_DATE_MISSING                                                                                    | calendar enabled without a date field                                                                  |
-| CYCLIC_DEPENDENCY                                                                                        | targets and links depend on each other in a loop                                                       |
-| RAW_EXPRESSION_EMPTY                                                                                     | a raw expression is blank                                                                              |
+| Code                                                                                                     | Meaning                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| EMPTY_PROJECT                                                                                            | no source tables                                                                                                                  |
+| DUPLICATE_TABLE_NAME                                                                                     | two tables (incl. mapping tables and the calendar) share a name, case-insensitive                                                 |
+| DUPLICATE_FIELD_NAME                                                                                     | two output names in one table                                                                                                     |
+| INVALID_NAME / EMPTY_NAME                                                                                | name contains `]` or a line break / is blank                                                                                      |
+| SOURCE_PATH_MISSING / SOURCE_CONNECTION_MISSING / EXCEL_SHEET_MISSING / SQL_QUERY_MISSING / INLINE_EMPTY | incomplete source                                                                                                                 |
+| TARGET_PRIMARY_MISSING                                                                                   | target is not built from any table                                                                                                |
+| TARGET_NO_COLUMNS                                                                                        | target has no columns; when building a whole script such targets (and their links) are skipped with a warning instead of blocking |
+| FIELD_NOT_FOUND                                                                                          | a reference points to a field or column that does not exist                                                                       |
+| FIELD_NOT_REACHABLE                                                                                      | target uses a field of a table not merged into its primary (fix: create a left join on the common key)                            |
+| FIELD_IGNORED                                                                                            | target uses a field whose role is `ignore` (fix: set the role to dimension)                                                       |
+| LINK_NO_PAIRS / LINK_SELF / LINK_TABLE_MISSING / APPLYMAP_FIELDS_MISSING                                 | incomplete link                                                                                                                   |
+| APPLYMAP_MAPPING_UNAVAILABLE                                                                             | mapping built from a target table used by a source table (sources load before targets)                                            |
+| CALENDAR_DATE_MISSING                                                                                    | calendar enabled without a date field                                                                                             |
+| CYCLIC_DEPENDENCY                                                                                        | targets and links depend on each other in a loop                                                                                  |
+| RAW_EXPRESSION_EMPTY                                                                                     | a raw expression is blank                                                                                                         |
 
 ## 4. Data-model analysis (warnings with fixes)
 

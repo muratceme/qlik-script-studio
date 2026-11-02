@@ -92,7 +92,12 @@ export function DesignStep() {
       onDragCancel={() => setDragging(null)}
     >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <SourceFieldsPane sources={project.sources} onAdd={addToSelected} canAdd />
+        <SourceFieldsPane
+          project={project}
+          excludeTargetId={selectedTarget?.id ?? null}
+          onAdd={addToSelected}
+          canAdd
+        />
         <div className="flex min-w-0 flex-col gap-3">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">{t('design.targetsPane')}</h2>
